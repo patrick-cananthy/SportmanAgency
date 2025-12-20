@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sportsman Talent Agency - Premier global sports and talent management firm representing elite athletes and building brand partnerships">
+    <meta name="keywords" content="sports agency, talent management, athlete representation, brand partnerships, sports marketing">
+    <title>Sportsman Talent Agency - World-Class Sports & Talent Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <a href="#home">Sportsman Talent Agency</a>
+            </div>
+            <button class="mobile-toggle" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu">
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li class="dropdown">
+                    <a href="#talent-roster">Talent Roster <span class="arrow">▼</span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#talent-roster" data-sport="all">All Sports</a></li>
+                        <li><a href="#talent-roster" data-sport="football">Football</a></li>
+                        <li><a href="#talent-roster" data-sport="basketball">Basketball</a></li>
+                        <li><a href="#talent-roster" data-sport="athletics">Athletics</a></li>
+                        <li><a href="#talent-roster" data-sport="tennis">Tennis</a></li>
+                        <li><a href="#talent-roster" data-sport="soccer">Soccer</a></li>
+                        <li><a href="#talent-roster" data-sport="golf">Golf</a></li>
+                        <li><a href="#talent-roster" data-sport="other">Other Sports</a></li>
+                    </ul>
+                </li>
+                <li><a href="#work">Work</a></li>
+                <li><a href="#partners">Partners</a></li>
+                <li><a href="#careers">Careers</a></li>
+                <li><a href="#news">News</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-carousel">
+            <!-- Video 1: Football/Soccer -->
+            <div class="hero-slide active">
+                <video muted loop playsinline class="hero-video" preload="auto">
+                    <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay"></div>
+            </div>
+            <!-- Video 2: Athletics/Running -->
+            <div class="hero-slide">
+                <video muted loop playsinline class="hero-video" preload="auto">
+                    <source src="https://videos.pexels.com/video-files/2491284/2491284-hd_1920_1080_25fps.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay"></div>
+            </div>
+            <!-- Video 3: Basketball -->
+            <div class="hero-slide">
+                <video muted loop playsinline class="hero-video" preload="auto">
+                    <source src="https://videos.pexels.com/video-files/3044474/3044474-hd_1920_1080_25fps.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay"></div>
+            </div>
+            <!-- Video 4: Team Sports -->
+            <div class="hero-slide">
+                <video muted loop playsinline class="hero-video" preload="auto">
+                    <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay"></div>
+            </div>
+            <!-- Video 5: Training/Exercise -->
+            <div class="hero-slide">
+                <video muted loop playsinline class="hero-video" preload="auto">
+                    <source src="https://videos.pexels.com/video-files/2491284/2491284-hd_1920_1080_25fps.mp4" type="video/mp4">
+                </video>
+                <div class="hero-overlay"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="line">World-Class</span>
+                <span class="line">Sports & Talent</span>
+                <span class="line"><em>Management</em></span>
+            </h1>
+            <p class="hero-subtitle">Representing elite athletes. Building brand partnerships. Shaping the future of sports.</p>
+            <div class="hero-ctas">
+                <a href="#contact" class="cta-button primary">Partner With Us</a>
+                <a href="#talent-roster" class="cta-button secondary">Get Represented</a>
+            </div>
+        </div>
+        <div class="hero-stats">
+            <div class="hero-stat">
+                <div class="hero-stat-number">500+</div>
+                <div class="hero-stat-label">Athletes Represented</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">50+</div>
+                <div class="hero-stat-label">Countries</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">200+</div>
+                <div class="hero-stat-label">Brand Partnerships</div>
+            </div>
+            <div class="hero-stat">
+                <div class="hero-stat-number">15+</div>
+                <div class="hero-stat-label">Years Experience</div>
+            </div>
+        </div>
+        <div class="hero-carousel-indicators">
+            <span class="indicator active" data-slide="0"></span>
+            <span class="indicator" data-slide="1"></span>
+            <span class="indicator" data-slide="2"></span>
+            <span class="indicator" data-slide="3"></span>
+            <span class="indicator" data-slide="4"></span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">About Sportsman Talent Agency</h2>
+                <p class="section-subtitle">Innovating with purpose and leading with influence</p>
+            </div>
+            <div class="about-content">
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=800&h=600&fit=crop&q=80" alt="Sportsman Talent Agency Team" loading="lazy">
+                </div>
+                <div class="about-text">
+                    <h3>Our Mission</h3>
+                    <p>At Sportsman Talent Agency, we're dedicated to innovating with purpose and leading with influence. Our incomparable ideas, expert craft and global reach create valuable difference for talent, brands and properties.</p>
+                    <p>We shape the future of sports, entertainment, and culture through strategic partnerships, creative marketing, and comprehensive talent representation.</p>
+                    <h3>Our Vision</h3>
+                    <p>To be the world's most trusted and innovative sports talent management agency, empowering athletes to achieve their full potential while creating meaningful brand partnerships that drive business results.</p>
+                </div>
+            </div>
+            <div class="values-grid">
+                <div class="value-card">
+                    <div class="value-icon">🎯</div>
+                    <h3>Values</h3>
+                    <p>Integrity, excellence, and innovation guide everything we do. We build trust through transparency and deliver results that exceed expectations.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">👥</div>
+                    <h3>People</h3>
+                    <p>Our team of experts is dedicated to your success. We combine deep industry knowledge with creative thinking to unlock opportunities.</p>
+                </div>
+                <div class="value-card">
+                    <div class="value-icon">🌍</div>
+                    <h3>Global Presence</h3>
+                    <p>With offices and partnerships across 50+ countries, we provide local expertise with global reach and impact.</p>
+                </div>
+            </div>
+            <div class="leadership-section">
+                <h3>Leadership Team</h3>
+                <div class="leadership-grid">
+                    <div class="leader-card">
+                        <div class="leader-image">
+                            <img src="images/ghana-u20-coach-desmond-ofei.jpg" alt="CEO" loading="lazy">
+                        </div>
+                        <h4>Kwame Asante</h4>
+                        <p>Chief Executive Officer</p>
+                    </div>
+                    <div class="leader-card">
+                        <div class="leader-image">
+                            <img src="images/IMG_1249-jpg-e1710657710450.jpg" alt="CTO" loading="lazy">
+                        </div>
+                        <h4>Joshua Essuh Mensah</h4>
+                        <p>Chief Talent Officer</p>
+                    </div>
+                    <div class="leader-card">
+                        <div class="leader-image">
+                            <img src="images/Kwesi-Appiah.jpg" alt="CMO" loading="lazy">
+                        </div>
+                        <h4>Kofi Adjei</h4>
+                        <p>Chief Marketing Officer</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="services section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Services</h2>
+                <p class="section-subtitle">Comprehensive solutions for <em>athletes and brands</em></p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=600&h=400&fit=crop&q=80" alt="Athlete Representation" loading="lazy">
+                    </div>
+                    <div class="service-content">
+                        <h3>Athlete & Talent Representation</h3>
+                        <p>Comprehensive representation services for elite and emerging athletes across all sports disciplines.</p>
+                        <ul>
+                            <li>Contract negotiation & management</li>
+                            <li>Career planning & development</li>
+                            <li>Personal brand development</li>
+                            <li>Financial planning & wealth management</li>
+                            <li>Media training & public relations</li>
+                        </ul>
+                        <a href="#contact" class="service-cta">Learn More →</a>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop&q=80" alt="Brand Partnerships" loading="lazy">
+                    </div>
+                    <div class="service-content">
+                        <h3>Brand Partnerships & Sponsorships</h3>
+                        <p>Strategic brand partnerships that align values and drive measurable business results.</p>
+                        <ul>
+                            <li>Endorsement deal negotiation</li>
+                            <li>Brand alignment strategy</li>
+                            <li>Partnership activation</li>
+                            <li>Long-term relationship management</li>
+                            <li>ROI measurement & analytics</li>
+                        </ul>
+                        <a href="#contact" class="service-cta">Learn More →</a>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop&q=80" alt="Marketing & Media" loading="lazy">
+                    </div>
+                    <div class="service-content">
+                        <h3>Marketing & Media Management</h3>
+                        <p>Full-service marketing and media management to amplify your brand and reach.</p>
+                        <ul>
+                            <li>PR & media relations</li>
+                            <li>Social media strategy & management</li>
+                            <li>Content creation & distribution</li>
+                            <li>Crisis management</li>
+                            <li>Digital marketing campaigns</li>
+                        </ul>
+                        <a href="#contact" class="service-cta">Learn More →</a>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop&q=80" alt="Event Marketing" loading="lazy">
+                    </div>
+                    <div class="service-content">
+                        <h3>Event & Experiential Marketing</h3>
+                        <p>Create unforgettable experiences that connect brands with fans and drive engagement.</p>
+                        <ul>
+                            <li>Sports event management</li>
+                            <li>Fan engagement activations</li>
+                            <li>Corporate hospitality</li>
+                            <li>Product launches</li>
+                            <li>VIP experiences</li>
+                        </ul>
+                        <a href="#contact" class="service-cta">Learn More →</a>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-image">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop&q=80" alt="Analytics" loading="lazy">
+                    </div>
+                    <div class="service-content">
+                        <h3>Data, Insights & Performance Analytics</h3>
+                        <p>Data-driven insights to optimize performance and maximize ROI for athletes and brands.</p>
+                        <ul>
+                            <li>Audience insights & demographics</li>
+                            <li>Campaign performance tracking</li>
+                            <li>Market research & analysis</li>
+                            <li>Competitive intelligence</li>
+                            <li>Custom reporting & dashboards</li>
+                        </ul>
+                        <a href="#contact" class="service-cta">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Talent Roster Section -->
+    <section id="talent-roster" class="talent-roster section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Talent Roster</h2>
+                <p class="section-subtitle">Elite athletes and <em>rising stars</em></p>
+            </div>
+            <div class="talent-filters">
+                <button class="filter-btn active" data-sport="all">All Sports</button>
+                <button class="filter-btn" data-sport="football">Football</button>
+                <button class="filter-btn" data-sport="basketball">Basketball</button>
+                <button class="filter-btn" data-sport="athletics">Athletics</button>
+                <button class="filter-btn" data-sport="tennis">Tennis</button>
+                <button class="filter-btn" data-sport="soccer">Soccer</button>
+                <button class="filter-btn" data-sport="golf">Golf</button>
+                <button class="filter-btn" data-sport="other">Other</button>
+            </div>
+            <div class="talent-grid">
+                <div class="talent-profile" data-sport="football">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=500&fit=crop&q=80" alt="Football Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Kwame Asante</h3>
+                        <p class="talent-sport">Football</p>
+                        <p class="talent-achievements">NFL Pro Bowl, Super Bowl Champion</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="basketball">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=500&fit=crop&q=80" alt="Basketball Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Akosua Mensah</h3>
+                        <p class="talent-sport">Basketball</p>
+                        <p class="talent-achievements">WNBA All-Star, Olympic Gold Medalist</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="tennis">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1622163642999-9584742c66b8?w=400&h=500&fit=crop&q=80" alt="Tennis Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Kofi Osei</h3>
+                        <p class="talent-sport">Tennis</p>
+                        <p class="talent-achievements">Grand Slam Champion, World #3</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="soccer">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=500&fit=crop" alt="Soccer Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Adwoa Boateng</h3>
+                        <p class="talent-sport">Soccer</p>
+                        <p class="talent-achievements">World Cup Winner, Champions League</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="athletics">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=500&fit=crop&q=80" alt="Track Athlete" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Emmanuel Appiah</h3>
+                        <p class="talent-sport">Athletics</p>
+                        <p class="talent-achievements">Olympic Gold Medalist, World Record Holder</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="golf">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=400&h=500&fit=crop&q=80" alt="Golf Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Abena Owusu</h3>
+                        <p class="talent-sport">Golf</p>
+                        <p class="talent-achievements">Major Champion, PGA Tour Winner</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="basketball">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=500&fit=crop&q=80" alt="Basketball Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Yaw Adjei</h3>
+                        <p class="talent-sport">Basketball</p>
+                        <p class="talent-achievements">NBA All-Star, Scoring Champion</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+                <div class="talent-profile" data-sport="football">
+                    <div class="talent-image">
+                        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&h=500&fit=crop&q=80" alt="Football Player" loading="lazy">
+                    </div>
+                    <div class="talent-info">
+                        <h3>Prince Mensah</h3>
+                        <p class="talent-sport">Football</p>
+                        <p class="talent-achievements">Heisman Trophy Winner, NFL Rookie of the Year</p>
+                        <a href="#contact" class="talent-cta">Contact Representation</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work / Case Studies Section -->
+    <section id="work" class="work section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Work</h2>
+                <p class="section-subtitle">Proven impact and <em>results</em></p>
+            </div>
+            <div class="work-filters">
+                <button class="filter-btn active" data-work="all">All Work</button>
+                <button class="filter-btn" data-work="campaigns">Campaigns</button>
+                <button class="filter-btn" data-work="partnerships">Partnerships</button>
+                <button class="filter-btn" data-work="events">Events</button>
+            </div>
+            <div class="case-studies-grid">
+                <div class="case-study" data-work="campaigns">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=800&h=600&fit=crop&q=80" alt="Championship Campaign" loading="lazy">
+                        <div class="case-overlay">
+                            <span class="case-category">Brand Campaign</span>
+                        </div>
+                    </div>
+                    <div class="case-content">
+                        <h3>Major Championship Partnership</h3>
+                        <p class="case-client">Client: Global Sports Brand</p>
+                        <p class="case-challenge"><strong>Challenge:</strong> Launch new product line during major championship event</p>
+                        <p class="case-strategy"><strong>Strategy:</strong> Multi-platform activation combining athlete endorsements, event presence, and digital engagement</p>
+                        <p class="case-results"><strong>Results:</strong> 500M+ impressions, 25% increase in brand awareness, $50M in media value</p>
+                        <a href="#" class="case-link">View Full Case Study →</a>
+                    </div>
+                </div>
+                <div class="case-study" data-work="partnerships">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop&q=80" alt="Athlete Partnership" loading="lazy">
+                        <div class="case-overlay">
+                            <span class="case-category">Partnership</span>
+                        </div>
+                    </div>
+                    <div class="case-content">
+                        <h3>Elite Athlete Brand Partnership</h3>
+                        <p class="case-client">Client: Fortune 500 Company</p>
+                        <p class="case-challenge"><strong>Challenge:</strong> Establish authentic connection with target demographic through athlete partnership</p>
+                        <p class="case-strategy"><strong>Strategy:</strong> Long-term multi-year partnership with integrated content, events, and community initiatives</p>
+                        <p class="case-results"><strong>Results:</strong> 3-year partnership extension, 40% increase in brand favorability, 15M+ social media reach</p>
+                        <a href="#" class="case-link">View Full Case Study →</a>
+                    </div>
+                </div>
+                <div class="case-study" data-work="events">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=800&h=600&fit=crop&q=80" alt="Global Tour" loading="lazy">
+                        <div class="case-overlay">
+                            <span class="case-category">Event</span>
+                        </div>
+                    </div>
+                    <div class="case-content">
+                        <h3>Global Sports Tour Activation</h3>
+                        <p class="case-client">Client: International Sports Federation</p>
+                        <p class="case-challenge"><strong>Challenge:</strong> Create engaging fan experiences across 12 cities worldwide</p>
+                        <p class="case-strategy"><strong>Strategy:</strong> Integrated event series with athlete appearances, interactive activations, and digital amplification</p>
+                        <p class="case-results"><strong>Results:</strong> 200K+ attendees, 1B+ digital impressions, 30% increase in fan engagement</p>
+                        <a href="#" class="case-link">View Full Case Study →</a>
+                    </div>
+                </div>
+                <div class="case-study" data-work="campaigns">
+                    <div class="case-image">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop&q=80" alt="Digital Campaign" loading="lazy">
+                        <div class="case-overlay">
+                            <span class="case-category">Digital Campaign</span>
+                        </div>
+                    </div>
+                    <div class="case-content">
+                        <h3>Digital Content Series</h3>
+                        <p class="case-client">Client: Lifestyle Brand</p>
+                        <p class="case-challenge"><strong>Challenge:</strong> Build brand awareness through authentic athlete storytelling</p>
+                        <p class="case-strategy"><strong>Strategy:</strong> Multi-episode documentary series featuring athletes' journeys, distributed across platforms</p>
+                        <p class="case-results"><strong>Results:</strong> 50M+ video views, 2M+ new followers, 60% increase in brand consideration</p>
+                        <a href="#" class="case-link">View Full Case Study →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands & Partners Section -->
+    <section id="partners" class="partners section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Brands & Partners</h2>
+                <p class="section-subtitle">Trusted by <em>world-class</em> organizations</p>
+            </div>
+            <div class="partners-grid">
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Nike</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Adidas</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Coca-Cola</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">BMW</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Mastercard</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Pepsi</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Red Bull</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Under Armour</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Gatorade</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Visa</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">Amazon</div>
+                </div>
+                <div class="partner-logo">
+                    <div class="partner-placeholder">ESPN</div>
+                </div>
+            </div>
+            <div class="partners-testimonials">
+                <div class="testimonial">
+                    <p class="testimonial-text">"Sportsman Talent Agency has been instrumental in building our brand's connection with sports fans. Their strategic approach and deep industry knowledge deliver exceptional results."</p>
+                    <p class="testimonial-author">— CEO, Global Sports Brand</p>
+                </div>
+                <div class="testimonial">
+                    <p class="testimonial-text">"Working with Sportsman Talent Agency transformed our athlete partnership program. They understand both the business and the passion behind sports."</p>
+                    <p class="testimonial-author">— Marketing Director, Fortune 500 Company</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Careers Section -->
+    <section id="careers" class="careers section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Careers</h2>
+                <p class="section-subtitle">Become a <em>playmaker</em></p>
+            </div>
+            <div class="careers-content">
+                <div class="careers-text">
+                    <h3>Join Our Team</h3>
+                    <p>Join a team that's shaping the future of sports, entertainment, and culture. We're looking for innovative thinkers, creative problem-solvers, and passionate professionals who want to make an impact.</p>
+                    <div class="careers-culture">
+                        <h4>Our Culture</h4>
+                        <p>At Sportsman Talent Agency, we believe in fostering an inclusive, diverse, and dynamic work environment where every team member can thrive and contribute to our collective success.</p>
+                    </div>
+                    <div class="careers-diversity">
+                        <h4>Diversity & Inclusion</h4>
+                        <p>We are committed to building a diverse team that reflects the global sports community we serve. We celebrate differences and believe they make us stronger.</p>
+                    </div>
+                </div>
+                <div class="careers-benefits">
+                    <h3>Why Work With Us</h3>
+                    <ul>
+                        <li>Global opportunities and impact</li>
+                        <li>Innovative work environment</li>
+                        <li>Competitive benefits package</li>
+                        <li>Career development programs</li>
+                        <li>Inclusive and diverse culture</li>
+                        <li>Work with elite athletes and brands</li>
+                        <li>Flexible work arrangements</li>
+                        <li>Health & wellness programs</li>
+                    </ul>
+                    <a href="#contact" class="careers-button">View Open Positions</a>
+                </div>
+            </div>
+            <div class="job-listings">
+                <h3>Current Openings</h3>
+                <div class="jobs-grid">
+                    <div class="job-card">
+                        <h4>Senior Talent Manager</h4>
+                        <p class="job-location">Accra, Ghana</p>
+                        <p class="job-type">Full-time</p>
+                        <a href="#contact" class="job-apply">Apply Now →</a>
+                    </div>
+                    <div class="job-card">
+                        <h4>Brand Partnership Director</h4>
+                        <p class="job-location">Kumasi, Ghana</p>
+                        <p class="job-type">Full-time</p>
+                        <a href="#contact" class="job-apply">Apply Now →</a>
+                    </div>
+                    <div class="job-card">
+                        <h4>Marketing Manager</h4>
+                        <p class="job-location">Tamale, Ghana</p>
+                        <p class="job-type">Full-time</p>
+                        <a href="#contact" class="job-apply">Apply Now →</a>
+                    </div>
+                    <div class="job-card">
+                        <h4>Digital Content Producer</h4>
+                        <p class="job-location">Accra, Ghana (Remote)</p>
+                        <p class="job-type">Full-time</p>
+                        <a href="#contact" class="job-apply">Apply Now →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News & Insights Section -->
+    <section id="news" class="news section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">News & Insights</h2>
+                <p class="section-subtitle">Latest updates and <em>thought leadership</em></p>
+            </div>
+            <div class="news-grid">
+                <article class="news-card featured">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80" alt="Partnership Announcement" loading="lazy">
+                    </div>
+                    <div class="news-content">
+                        <div class="news-date">January 15, 2025</div>
+                        <h3>Major Partnership Announcement</h3>
+                        <p>Sportsman Talent Agency announces new five-year partnership with global sports foundation to support athlete development programs worldwide.</p>
+                        <a href="#" class="news-link">Read More →</a>
+                    </div>
+                </article>
+                <article class="news-card">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop&q=80" alt="Championship Success" loading="lazy">
+                    </div>
+                    <div class="news-content">
+                        <div class="news-date">January 10, 2025</div>
+                        <h3>Championship Success</h3>
+                        <p>Our athletes achieve record-breaking performances in international competition, securing multiple world records and championship titles.</p>
+                        <a href="#" class="news-link">Read More →</a>
+                    </div>
+                </article>
+                <article class="news-card">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop&q=80" alt="Brand Campaign" loading="lazy">
+                    </div>
+                    <div class="news-content">
+                        <div class="news-date">January 5, 2025</div>
+                        <h3>Brand Campaign Launch</h3>
+                        <p>New innovative marketing campaign breaks engagement records across platforms, reaching over 100 million viewers in first week.</p>
+                        <a href="#" class="news-link">Read More →</a>
+                    </div>
+                </article>
+                <article class="news-card">
+                    <div class="news-image">
+                        <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=400&fit=crop&q=80" alt="Industry Insights" loading="lazy">
+                    </div>
+                    <div class="news-content">
+                        <div class="news-date">December 28, 2024</div>
+                        <h3>Industry Insights: The Future of Sports Marketing</h3>
+                        <p>Our team shares insights on emerging trends in sports marketing and how brands can connect with fans in the digital age.</p>
+                        <a href="#" class="news-link">Read More →</a>
+                    </div>
+                </article>
+            </div>
+            <div class="news-link-all">
+                <a href="#" class="link-all">See All News & Insights →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Contact</h2>
+                <p class="section-subtitle">Get In Touch With Us</p>
+            </div>
+            <div class="contact-tabs">
+                <button class="contact-tab active" data-form="brands">Brands & Sponsors</button>
+                <button class="contact-tab" data-form="athletes">Athletes & Talent</button>
+                <button class="contact-tab" data-form="media">Media Inquiries</button>
+                <button class="contact-tab" data-form="careers">Careers</button>
+            </div>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <h3>New Business</h3>
+                        <a href="mailto:business@sportsmantalent.com">business@sportsmantalent.com</a>
+                        <p>For brands and sponsors seeking partnerships</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Talent Representation</h3>
+                        <a href="mailto:talent@sportsmantalent.com">talent@sportsmantalent.com</a>
+                        <p>For athletes seeking representation</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Press & Media</h3>
+                        <a href="mailto:press@sportsmantalent.com">press@sportsmantalent.com</a>
+                        <p>For media inquiries and press releases</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Careers</h3>
+                        <a href="mailto:careers@sportsmantalent.com">careers@sportsmantalent.com</a>
+                        <p>For job applications and career inquiries</p>
+                    </div>
+                    <div class="contact-offices">
+                        <h3>Office Locations</h3>
+                        <div class="office-location">
+                            <strong>Accra</strong>
+                            <p>123 Independence Avenue, Accra, Ghana</p>
+                        </div>
+                        <div class="office-location">
+                            <strong>Kumasi</strong>
+                            <p>456 Harper Road, Kumasi, Ghana</p>
+                        </div>
+                        <div class="office-location">
+                            <strong>Tamale</strong>
+                            <p>789 Stadium Road, Tamale, Ghana</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="contact-forms">
+                    <form id="contactFormBrands" class="contact-form active" data-form-type="brands">
+                        <h3>Brands & Sponsors Inquiry</h3>
+                        <div class="form-group">
+                            <input type="text" id="brands-name" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="brands-email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="brands-company" name="company" placeholder="Company Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="brands-subject" name="subject" placeholder="Subject" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="brands-message" name="message" placeholder="Tell us about your partnership goals" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Send Message</button>
+                    </form>
+                    <form id="contactFormAthletes" class="contact-form" data-form-type="athletes">
+                        <h3>Athletes & Talent Inquiry</h3>
+                        <div class="form-group">
+                            <input type="text" id="athletes-name" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="athletes-email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="athletes-sport" name="sport" placeholder="Sport" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="athletes-level" name="level" placeholder="Competition Level" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="athletes-message" name="message" placeholder="Tell us about your career goals" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Send Message</button>
+                    </form>
+                    <form id="contactFormMedia" class="contact-form" data-form-type="media">
+                        <h3>Media Inquiry</h3>
+                        <div class="form-group">
+                            <input type="text" id="media-name" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="media-email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="media-outlet" name="outlet" placeholder="Media Outlet" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="media-subject" name="subject" placeholder="Subject" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="media-message" name="message" placeholder="Your inquiry" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Send Message</button>
+                    </form>
+                    <form id="contactFormCareers" class="contact-form" data-form-type="careers">
+                        <h3>Career Application</h3>
+                        <div class="form-group">
+                            <input type="text" id="careers-name" name="name" placeholder="Your Name" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" id="careers-email" name="email" placeholder="Your Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" id="careers-position" name="position" placeholder="Position of Interest" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="file" id="careers-resume" name="resume" accept=".pdf,.doc,.docx" required>
+                            <label for="careers-resume" class="file-label">Upload Resume</label>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="careers-message" name="message" placeholder="Cover Letter" rows="5" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-button">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <ul>
+                        <li><a href="#about">Our Story</a></li>
+                        <li><a href="#about">Values</a></li>
+                        <li><a href="#about">People</a></li>
+                        <li><a href="#about">Regions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="#services">Talent Representation</a></li>
+                        <li><a href="#services">Brand Partnerships</a></li>
+                        <li><a href="#services">Marketing & Media</a></li>
+                        <li><a href="#services">Event Management</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Talent</h4>
+                    <ul>
+                        <li><a href="#talent-roster">Talent Roster</a></li>
+                        <li><a href="#talent-roster">All Sports</a></li>
+                        <li><a href="#work">Case Studies</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#work">Work</a></li>
+                        <li><a href="#partners">Partners</a></li>
+                        <li><a href="#careers">Careers</a></li>
+                        <li><a href="#news">News</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Connect</h4>
+                    <div class="social-links">
+                        <a href="#" aria-label="Instagram">Instagram</a>
+                        <a href="#" aria-label="Twitter">Twitter</a>
+                        <a href="#" aria-label="Facebook">Facebook</a>
+                        <a href="#" aria-label="LinkedIn">LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Sportsman Talent Agency. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy Notice</a>
+                    <a href="#">Terms & Conditions</a>
+                    <a href="#">Cookie Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
