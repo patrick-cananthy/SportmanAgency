@@ -21,6 +21,12 @@
                         <label for="password">Password</label>
                         <input type="password" id="password" required>
                     </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="rememberMe">
+                            Remember Me (Stay logged in)
+                        </label>
+                    </div>
                     <button type="submit" class="btn btn-primary">Login</button>
                     <div id="loginError" class="error-message"></div>
                 </form>
@@ -35,21 +41,61 @@
             </div>
             <nav class="nav-menu">
                 <a href="#" class="nav-item active" data-page="news">News & Insights</a>
+                <a href="#" class="nav-item" data-page="events">Events</a>
+                <a href="#" class="nav-item" data-page="jobs">Job Openings</a>
+                <a href="#" class="nav-item" data-page="talents">Talent Roster</a>
+                <a href="#" class="nav-item" data-page="sales-rentals">Sales/Rentals</a>
                 <a href="#" class="nav-item" data-page="comments">Comments</a>
                 <a href="#" class="nav-item" data-page="stats">Statistics</a>
-                <a href="#" class="nav-item admin-only" data-page="users" style="display: none;">User Management</a>
+                <a href="#" class="nav-item super-admin-only" data-page="users" style="display: none;">User Management</a>
                 <a href="#" class="nav-item" id="logoutBtn">Logout</a>
             </nav>
         </div>
         <div class="main-content">
             <header class="header">
                 <h1 id="pageTitle">News & Insights</h1>
-                <button class="btn btn-primary" id="addNewsBtn">+ Add New Article</button>
+                <button class="btn btn-primary" id="addNewsBtn" style="display: none;">+ Add New Article</button>
+                <button class="btn btn-primary" id="addEventBtn" style="display: none;">+ Add New Event</button>
+                <button class="btn btn-primary" id="addJobBtn" style="display: none;">+ Add New Job</button>
+                <button class="btn btn-primary" id="addTalentBtn" style="display: none;">+ Add New Talent</button>
+                <button class="btn btn-primary" id="addSalesRentalBtn" style="display: none;">+ Add New Item</button>
             </header>
 
             <div id="newsPage" class="content-page active">
                 <div class="news-list" id="newsList">
                     <!-- News items will be loaded here -->
+                </div>
+            </div>
+
+            <div id="eventsPage" class="content-page">
+                <div class="events-section">
+                    <div class="events-list" id="eventsList">
+                        <!-- Events will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="jobsPage" class="content-page">
+                <div class="jobs-section">
+                    <div class="jobs-list" id="jobsList">
+                        <!-- Jobs will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="talentsPage" class="content-page">
+                <div class="talents-section">
+                    <div class="talents-list" id="talentsList">
+                        <!-- Talents will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="salesRentalsPage" class="content-page">
+                <div class="sales-rentals-section">
+                    <div class="sales-rentals-list" id="salesRentalsList">
+                        <!-- Sales/Rentals will be loaded here -->
+                    </div>
                 </div>
             </div>
 
@@ -202,6 +248,7 @@
                     <select id="userRole" required>
                         <option value="editor">Editor</option>
                         <option value="admin">Admin</option>
+                        <option value="super_admin">Super Admin</option>
                     </select>
                 </div>
                 <div class="modal-actions">
@@ -209,6 +256,375 @@
                     <button type="submit" class="btn btn-primary">Save User</button>
                 </div>
                 <div id="userError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="eventModalTitle">Add New Event</h2>
+                <span class="close" id="closeEventModal">&times;</span>
+            </div>
+            <form id="eventForm">
+                <input type="hidden" id="eventId">
+                <div class="form-group">
+                    <label for="eventTitle">Title *</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventShortDescription">Short Description *</label>
+                    <textarea id="eventShortDescription" rows="3" required maxlength="200"></textarea>
+                    <small id="eventShortDescCount">0/200 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Full Description *</label>
+                    <textarea id="eventDescription" rows="6" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventLocation">Location *</label>
+                        <input type="text" id="eventLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventCategory">Category</label>
+                        <select id="eventCategory">
+                            <option value="General">General</option>
+                            <option value="Tournament">Tournament</option>
+                            <option value="Workshop">Workshop</option>
+                            <option value="Conference">Conference</option>
+                            <option value="Exhibition">Exhibition</option>
+                            <option value="Training">Training</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventDate">Event Date *</label>
+                        <input type="datetime-local" id="eventDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventTime">Event Time</label>
+                        <input type="text" id="eventTime" placeholder="e.g., 10:00 AM - 5:00 PM">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="eventImage">Image</label>
+                    <input type="file" id="eventImage" accept="image/*">
+                    <div id="eventImagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-group">
+                    <label for="eventRegistrationUrl">Registration URL</label>
+                    <input type="url" id="eventRegistrationUrl" placeholder="https://...">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventContactEmail">Contact Email</label>
+                        <input type="email" id="eventContactEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="eventContactPhone">Contact Phone</label>
+                        <input type="tel" id="eventContactPhone">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="eventFeatured">
+                            Featured Event
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="eventPublished">
+                            Publish Immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelEventBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Job Modal -->
+    <div id="jobModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="jobModalTitle">Add New Job</h2>
+                <span class="close" id="closeJobModal">&times;</span>
+            </div>
+            <form id="jobForm">
+                <input type="hidden" id="jobId">
+                <div class="form-group">
+                    <label for="jobTitle">Job Title *</label>
+                    <input type="text" id="jobTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="jobShortDescription">Short Description *</label>
+                    <textarea id="jobShortDescription" rows="3" required maxlength="200"></textarea>
+                    <small id="jobShortDescCount">0/200 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="jobDescription">Full Description *</label>
+                    <textarea id="jobDescription" rows="8" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobLocation">Location *</label>
+                        <input type="text" id="jobLocation" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="jobType">Job Type *</label>
+                        <select id="jobType" required>
+                            <option value="Full-time">Full-time</option>
+                            <option value="Part-time">Part-time</option>
+                            <option value="Contract">Contract</option>
+                            <option value="Internship">Internship</option>
+                            <option value="Remote">Remote</option>
+                            <option value="Freelance">Freelance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobDepartment">Department/Role</label>
+                        <input type="text" id="jobDepartment" placeholder="e.g., Talent Management, Marketing, Sales">
+                    </div>
+                    <div class="form-group">
+                        <label for="jobSalary">Salary Range</label>
+                        <input type="text" id="jobSalary" placeholder="e.g., $50,000 - $70,000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="jobRequirements">Requirements</label>
+                    <textarea id="jobRequirements" rows="5" placeholder="List key requirements, qualifications, etc."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="jobApplicationUrl">Application URL</label>
+                    <input type="url" id="jobApplicationUrl" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="jobContactEmail">Contact Email</label>
+                    <input type="email" id="jobContactEmail">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="jobClosingDate">Closing Date</label>
+                        <input type="date" id="jobClosingDate">
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="jobFeatured">
+                            Featured Job
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="jobPublished">
+                            Publish Immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelJobBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Job</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Talent Modal -->
+    <div id="talentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="talentModalTitle">Add New Talent</h2>
+                <span class="close" id="closeTalentModal">&times;</span>
+            </div>
+            <form id="talentForm">
+                <input type="hidden" id="talentId">
+                <div class="form-group">
+                    <label for="talentName">Name *</label>
+                    <input type="text" id="talentName" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="talentSport">Sport *</label>
+                        <select id="talentSport" required>
+                            <option value="Football">Football</option>
+                            <option value="Basketball">Basketball</option>
+                            <option value="Soccer">Soccer</option>
+                            <option value="Tennis">Tennis</option>
+                            <option value="Athletics">Athletics</option>
+                            <option value="Golf">Golf</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="talentNationality">Nationality</label>
+                        <input type="text" id="talentNationality">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="talentAge">Age</label>
+                        <input type="number" id="talentAge" min="1" max="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="talentPosition">Position</label>
+                        <input type="text" id="talentPosition" placeholder="e.g., Forward, Point Guard">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="talentTeam">Team/Club</label>
+                    <input type="text" id="talentTeam">
+                </div>
+                <div class="form-group">
+                    <label for="talentShortBio">Short Bio *</label>
+                    <textarea id="talentShortBio" rows="3" required maxlength="200"></textarea>
+                    <small id="talentShortBioCount">0/200 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="talentBio">Full Bio *</label>
+                    <textarea id="talentBio" rows="8" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="talentAchievements">Achievements (one per line)</label>
+                    <textarea id="talentAchievements" rows="5" placeholder="Enter achievements, one per line"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="talentStats">Statistics</label>
+                    <textarea id="talentStats" rows="4" placeholder="Enter statistics or performance data"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="talentSocialMedia">Social Media Links (one per line)</label>
+                    <textarea id="talentSocialMedia" rows="3" placeholder="Enter social media URLs, one per line"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="talentImage">Image</label>
+                    <input type="file" id="talentImage" accept="image/*">
+                    <div id="talentImagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="talentFeatured">
+                            Featured Talent
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="talentPublished">
+                            Publish Immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelTalentBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Talent</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sales/Rental Modal -->
+    <div id="salesRentalModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="salesRentalModalTitle">Add New Item</h2>
+                <span class="close" id="closeSalesRentalModal">&times;</span>
+            </div>
+            <form id="salesRentalForm">
+                <input type="hidden" id="salesRentalId">
+                <div class="form-group">
+                    <label for="salesRentalTitle">Title *</label>
+                    <input type="text" id="salesRentalTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="salesRentalShortDescription">Short Description *</label>
+                    <textarea id="salesRentalShortDescription" rows="3" required maxlength="200"></textarea>
+                    <small id="salesRentalShortDescCount">0/200 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="salesRentalDescription">Full Description *</label>
+                    <textarea id="salesRentalDescription" rows="6" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salesRentalType">Type *</label>
+                        <select id="salesRentalType" required>
+                            <option value="sale">For Sale</option>
+                            <option value="rental">For Rent</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="salesRentalCategory">Category</label>
+                        <input type="text" id="salesRentalCategory" placeholder="e.g., Equipment, Gear, Merchandise">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salesRentalPrice">Price</label>
+                        <input type="number" id="salesRentalPrice" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="salesRentalPriceDisplay">Price Display</label>
+                        <input type="text" id="salesRentalPriceDisplay" placeholder="e.g., $500 or Contact for price">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salesRentalLocation">Location</label>
+                        <input type="text" id="salesRentalLocation" placeholder="e.g., Accra, Ghana">
+                    </div>
+                    <div class="form-group">
+                        <label for="salesRentalCondition">Condition</label>
+                        <input type="text" id="salesRentalCondition" placeholder="e.g., New, Used, Excellent">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salesRentalContactEmail">Contact Email</label>
+                        <input type="email" id="salesRentalContactEmail">
+                    </div>
+                    <div class="form-group">
+                        <label for="salesRentalContactPhone">Contact Phone</label>
+                        <input type="tel" id="salesRentalContactPhone">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="salesRentalImage">Image</label>
+                    <input type="file" id="salesRentalImage" accept="image/*">
+                    <div id="salesRentalImagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="salesRentalAvailability" checked>
+                            Available
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="salesRentalFeatured">
+                            Featured Item
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="salesRentalPublished">
+                            Publish Immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelSalesRentalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
             </form>
         </div>
     </div>

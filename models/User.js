@@ -34,9 +34,14 @@ module.exports = (sequelize) => {
             }
         },
         role: {
-            type: DataTypes.ENUM('admin', 'editor'),
+            type: DataTypes.ENUM('super_admin', 'admin', 'editor'),
             allowNull: false,
             defaultValue: 'editor'
+        },
+        lastActivity: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: DataTypes.NOW
         }
     }, {
         tableName: 'users',

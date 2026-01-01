@@ -1235,45 +1235,120 @@ body {
 }
 
 .job-card {
-    padding: 30px;
     background-color: var(--primary-color);
-    border-radius: 10px;
-    border: 2px solid var(--bg-light);
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 
 .job-card:hover {
-    border-color: var(--secondary-color);
     transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 51, 153, 0.15);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
 }
 
-.job-card h4 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 15px;
+.job-card.featured {
+    border: 2px solid var(--secondary-color);
 }
 
-.job-location {
-    color: var(--text-light);
-    margin-bottom: 10px;
-}
-
-.job-type {
-    color: var(--accent-color);
-    font-weight: 600;
+.job-header {
     margin-bottom: 20px;
 }
 
-.job-apply {
+.job-featured-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff6b35;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.job-header h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
+    color: var(--text-dark, #1a1a1a);
+    line-height: 1.3;
+}
+
+.job-details {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.job-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.job-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.job-meta-item svg {
+    flex-shrink: 0;
     color: var(--secondary-color);
+}
+
+.job-description {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.job-salary {
+    color: var(--secondary-color);
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.job-posted {
+    color: var(--text-light);
+    font-size: 0.85rem;
+    margin-top: auto;
+}
+
+.job-actions {
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid #e4e6eb;
+}
+
+.job-apply {
+    display: inline-block;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 12px 24px;
+    border-radius: 6px;
     text-decoration: none;
     font-weight: 600;
     transition: var(--transition);
+    text-align: center;
+    width: 100%;
 }
 
 .job-apply:hover {
-    color: var(--accent-color);
+    background: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+    color: var(--primary-color);
 }
 
 /* News Section */
@@ -1337,6 +1412,7 @@ body {
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 15px;
+    color: var(--text-dark, #1a1a1a);
 }
 
 .news-card p {
@@ -1345,11 +1421,36 @@ body {
     margin-bottom: 20px;
 }
 
+.news-card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+}
+
+.news-card-link:hover {
+    text-decoration: none;
+}
+
+.news-card-link .news-content h3 {
+    color: var(--text-dark, #1a1a1a) !important;
+}
+
+.news-card-link .news-content p {
+    color: var(--text-light, #666666) !important;
+}
+
+.news-card-link .news-content .news-date {
+    color: var(--text-light, #666666) !important;
+}
+
 .news-link {
     color: var(--secondary-color);
     text-decoration: none;
     font-weight: 600;
     transition: var(--transition);
+    display: inline-block;
+    margin-top: 10px;
 }
 
 .news-link:hover {
@@ -1367,6 +1468,401 @@ body {
     font-weight: 600;
     font-size: 1.125rem;
     transition: var(--transition);
+}
+
+/* Events Section Styles */
+.events {
+    background-color: var(--bg-light);
+    padding: 100px 0;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.event-card {
+    background-color: var(--primary-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.event-card.featured {
+    grid-column: span 2;
+}
+
+.event-image {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+
+.event-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.event-card:hover .event-image img {
+    transform: scale(1.1);
+}
+
+.event-featured-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff6b35;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+}
+
+.event-content {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.event-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.event-category {
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.event-date {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+.event-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: var(--text-dark, #1a1a1a);
+    line-height: 1.3;
+}
+
+.event-description {
+    color: var(--text-light);
+    line-height: 1.8;
+    margin-bottom: 20px;
+    flex: 1;
+}
+
+.event-details {
+    margin-bottom: 20px;
+}
+
+.event-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.event-location svg {
+    flex-shrink: 0;
+    color: var(--secondary-color);
+}
+
+.event-register-btn {
+    display: inline-block;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 12px 24px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: var(--transition);
+    text-align: center;
+    margin-top: auto;
+}
+
+.event-register-btn:hover {
+    background: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+}
+
+@media (max-width: 968px) {
+    .event-card.featured {
+        grid-column: span 1;
+    }
+    
+    .events-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    
+    .event-content {
+        padding: 20px;
+    }
+    
+    .event-content h3 {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .event-image {
+        height: 200px;
+    }
+}
+
+/* Sales/Rentals Section Styles */
+.sales-rentals {
+    background-color: var(--primary-color);
+    padding: 100px 0;
+}
+
+.sales-rentals-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+}
+
+.sales-rentals-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 50px;
+}
+
+.sales-rental-card {
+    background-color: var(--primary-color);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+}
+
+.sales-rental-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.sales-rental-card.featured {
+    border: 2px solid var(--secondary-color);
+}
+
+.sales-rental-image {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+}
+
+.sales-rental-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.sales-rental-card:hover .sales-rental-image img {
+    transform: scale(1.1);
+}
+
+.sales-rental-featured-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff6b35;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+}
+
+.sales-rental-type-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    z-index: 2;
+    color: white;
+}
+
+.sales-rental-type-badge.sale-badge {
+    background: #28a745;
+}
+
+.sales-rental-type-badge.rental-badge {
+    background: #007bff;
+}
+
+.sales-rental-content {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.sales-rental-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+}
+
+.sales-rental-category {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.sales-rental-unavailable {
+    background: #dc3545;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.sales-rental-content h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--text-dark, #1a1a1a);
+    line-height: 1.3;
+}
+
+.sales-rental-description {
+    color: var(--text-light);
+    line-height: 1.7;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    flex: 1;
+}
+
+.sales-rental-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.sales-rental-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.sales-rental-detail-item svg {
+    flex-shrink: 0;
+    color: var(--secondary-color);
+}
+
+.sales-rental-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.sales-rental-contact {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.sales-rental-contact-btn {
+    flex: 1;
+    display: inline-block;
+    background: var(--secondary-color);
+    color: var(--primary-color);
+    padding: 12px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 600;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.sales-rental-contact-btn:hover {
+    background: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+    color: var(--primary-color);
+}
+
+@media (max-width: 968px) {
+    .sales-rentals-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .sales-rental-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sales-rentals-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sales-rental-image {
+        height: 200px;
+    }
 }
 
 .link-all:hover {

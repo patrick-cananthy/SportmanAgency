@@ -1061,7 +1061,7 @@
                 
                 <div class="sidebar">
                     <div class="sidebar-section">
-                        <h3>All Articles</h3>
+                        <h3>More News</h3>
                         <div id="allArticlesSidebar"></div>
                     </div>
                 </div>
@@ -1489,6 +1489,14 @@
                 const response = await fetch('/api/news?published=true');
                 const news = await response.json();
                 
+                console.log('Loaded news:', news);
+                console.log('Number of articles:', news.length);
+                if (news.length > 0) {
+                    console.log('First article:', news[0]);
+                    console.log('First article title:', news[0].title);
+                    console.log('First article excerpt:', news[0].excerpt);
+                }
+                
                 if (news.length === 0) {
                     document.getElementById('allNewsGrid').innerHTML = '<p class="loading">No news articles available</p>';
                     return;
@@ -1508,17 +1516,22 @@
                         badges.push('<span style="background: #ff6b35; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; margin-right: 5px;">Featured</span>');
                     }
                     
+                    // Escape HTML and provide fallbacks
+                    const safeTitle = (item.title || 'Untitled Article').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeExcerpt = (item.excerpt || 'No excerpt available.').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    const safeAlt = (item.title || 'News article').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    
                     return `
                         <article class="news-card ${item.featured ? 'featured' : ''}">
                             <a href="/news.html?id=${item.id}" class="news-card-link">
                                 <div class="news-image">
-                                    <img src="${imageUrl}" alt="${item.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80'">
+                                    <img src="${imageUrl}" alt="${safeAlt}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80'">
                                 </div>
                                 <div class="news-content">
                                     <div class="news-date">${date} ${badges.join('')}</div>
-                                    <h3>${item.title}</h3>
-                                    <p>${item.excerpt}</p>
-                                    <a href="/news.html?id=${item.id}" class="news-link">Read More →</a>
+                                    <h3>${safeTitle}</h3>
+                                    <p>${safeExcerpt}</p>
+                                    <span class="news-link">Read More →</span>
                                 </div>
                             </a>
                         </article>

@@ -41,8 +41,11 @@ router.post('/register', [
             role: role || 'editor' 
         });
 
-        // Generate token
-        const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+        // Update last activity
+        await user.update({ lastActivity: new Date() });
+
+        // Generate token with 30 minute expiration
+        const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30m' });
 
         res.status(201).json({
             message: 'User created successfully',
@@ -80,8 +83,11 @@ router.post('/login', [
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate token
-        const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+        // Update last activity
+        await user.update({ lastActivity: new Date() });
+
+        // Generate token with 30 minute expiration
+        const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '30m' });
 
         res.json({
             message: 'Login successful',
@@ -111,8 +117,24 @@ router.get('/verify', async (req, res) => {
             return res.status(401).json({ message: 'User not found' });
         }
 
+        // Check last activity (30 minutes inactivity timeout)
+        const now = Date.now();
+        if (user.lastActivity) {
+            const lastActivity = new Date(user.lastActivity).getTime();
+            const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+            if (now - lastActivity > SESSION_TIMEOUT) {
+                return res.status(401).json({ message: 'Session expired due to inactivity' });
+            }
+        }
+
+        // Update last activity
+        await user.update({ lastActivity: new Date() });
+
         res.json({ user });
     } catch (error) {
+        if (error.name === 'TokenExpiredError') {
+            return res.status(401).json({ message: 'Session expired' });
+        }
         res.status(401).json({ message: 'Invalid token' });
     }
 });

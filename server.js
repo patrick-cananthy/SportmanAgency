@@ -2,14 +2,55 @@ const express = require('express');
 const sequelize = require('./config/database');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const app = express();
 
+// Security Headers
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            scriptSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", "data:", "https:", "http:"],
+            connectSrc: ["'self'"]
+        }
+    },
+    crossOriginEmbedderPolicy: false
+}));
+
+// Rate Limiting
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: 'Too many requests from this IP, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // limit each IP to 5 login attempts per windowMs
+    message: 'Too many login attempts, please try again later.',
+    skipSuccessfulRequests: true
+});
+
+// Apply rate limiting
+app.use('/api/', apiLimiter);
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+
 // Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(cors({
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+    credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Serve static files from public directory FIRST (this will serve styles.css and script.js)
 app.use(express.static('public'));
@@ -63,13 +104,17 @@ app.get('/', (req, res) => {
 });
 
 // Initialize models
-let User, News, Like, Comment;
+let User, News, Like, Comment, Event, Job, Talent, SalesRental;
 
 try {
     User = require('./models/User')(sequelize);
     News = require('./models/News')(sequelize);
     Like = require('./models/Like')(sequelize);
     Comment = require('./models/Comment')(sequelize);
+    Event = require('./models/Event')(sequelize);
+    Job = require('./models/Job')(sequelize);
+    Talent = require('./models/Talent')(sequelize);
+    SalesRental = require('./models/SalesRental')(sequelize);
     console.log('✓ Models loaded successfully');
 } catch (error) {
     console.error('✗ Error loading models:', error);
@@ -89,7 +134,7 @@ try {
 }
 
 // Make models available to routes
-app.locals.models = { User, News, Like, Comment };
+app.locals.models = { User, News, Like, Comment, Event, Job, Talent, SalesRental };
 
 // Routes
 try {
@@ -99,6 +144,10 @@ try {
     app.use('/api/likes', require('./routes/likes'));
     app.use('/api/comments', require('./routes/comments'));
     app.use('/api/users', require('./routes/users'));
+    app.use('/api/events', require('./routes/events'));
+    app.use('/api/jobs', require('./routes/jobs'));
+    app.use('/api/talents', require('./routes/talents'));
+    app.use('/api/sales-rentals', require('./routes/salesRentals'));
     console.log('✓ Routes registered successfully');
 } catch (error) {
     console.error('✗ Error registering routes:', error);
