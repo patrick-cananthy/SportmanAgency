@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Sportsman Talent Agency</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="login-box">
+                <h1>Sportsman Talent Agency</h1>
+                <h2>Admin Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <div id="loginError" class="error-message"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="dashboardPage" class="page">
+        <div class="sidebar">
+            <div class="logo">
+                <h2>Sportsman Agency</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-page="news">News & Insights</a>
+                <a href="#" class="nav-item" data-page="comments">Comments</a>
+                <a href="#" class="nav-item" data-page="stats">Statistics</a>
+                <a href="#" class="nav-item admin-only" data-page="users" style="display: none;">User Management</a>
+                <a href="#" class="nav-item" id="logoutBtn">Logout</a>
+            </nav>
+        </div>
+        <div class="main-content">
+            <header class="header">
+                <h1 id="pageTitle">News & Insights</h1>
+                <button class="btn btn-primary" id="addNewsBtn">+ Add New Article</button>
+            </header>
+
+            <div id="newsPage" class="content-page active">
+                <div class="news-list" id="newsList">
+                    <!-- News items will be loaded here -->
+                </div>
+            </div>
+
+            <div id="commentsPage" class="content-page">
+                <div class="comments-section">
+                    <div class="comments-filters">
+                        <button class="filter-btn active" data-filter="all">All Comments</button>
+                        <button class="filter-btn" data-filter="pending">Pending Approval</button>
+                        <button class="filter-btn" data-filter="approved">Approved</button>
+                    </div>
+                    <div class="comments-list" id="commentsList">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="statsPage" class="content-page">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total News</h3>
+                        <p id="totalNews">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Published</h3>
+                        <p id="publishedNews">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Featured</h3>
+                        <p id="featuredNews">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Drafts</h3>
+                        <p id="draftNews">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Likes</h3>
+                        <p id="totalLikes">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Comments</h3>
+                        <p id="totalComments">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Pending Comments</h3>
+                        <p id="pendingComments">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="usersPage" class="content-page">
+                <div class="users-section">
+                    <button class="btn btn-primary" id="addUserBtn">+ Add New User</button>
+                    <div class="users-list" id="usersList">
+                        <!-- Users will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- News Modal -->
+    <div id="newsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Article</h2>
+                <span class="close">&times;</span>
+            </div>
+            <form id="newsForm">
+                <input type="hidden" id="newsId">
+                <div class="form-group">
+                    <label for="newsTitle">Title *</label>
+                    <input type="text" id="newsTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="newsExcerpt">Excerpt *</label>
+                    <textarea id="newsExcerpt" rows="3" required maxlength="200"></textarea>
+                    <small id="excerptCount">0/200 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="newsContent">Content *</label>
+                    <textarea id="newsContent" rows="10" required></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newsAuthor">Author *</label>
+                        <input type="text" id="newsAuthor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newsCategory">Category</label>
+                        <select id="newsCategory">
+                            <option value="General">General</option>
+                            <option value="Partnerships">Partnerships</option>
+                            <option value="Athletes">Athletes</option>
+                            <option value="Events">Events</option>
+                            <option value="Insights">Insights</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="newsImage">Image</label>
+                    <input type="file" id="newsImage" accept="image/*">
+                    <div id="imagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="newsFeatured">
+                            Featured Article
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="newsPublished">
+                            Publish Immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Article</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="userModalTitle">Add New User</h2>
+                <span class="close" id="closeUserModal">&times;</span>
+            </div>
+            <form id="userForm">
+                <input type="hidden" id="userId">
+                <div class="form-group">
+                    <label for="userUsername">Username *</label>
+                    <input type="text" id="userUsername" required>
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email *</label>
+                    <input type="email" id="userEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword">Password *</label>
+                    <input type="password" id="userPassword" minlength="6">
+                    <small id="passwordHelp">Leave blank to keep current password when editing</small>
+                </div>
+                <div class="form-group">
+                    <label for="userRole">Role *</label>
+                    <select id="userRole" required>
+                        <option value="editor">Editor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelUserBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                </div>
+                <div id="userError" class="error-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
+
+
