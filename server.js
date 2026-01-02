@@ -30,6 +30,11 @@ const apiLimiter = rateLimit({
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    // Skip rate limiting for authenticated admin routes
+    skip: (req) => {
+        // Skip if user is authenticated (will be checked in routes)
+        return false; // We'll handle this in routes
+    }
 });
 
 const authLimiter = rateLimit({
@@ -39,10 +44,18 @@ const authLimiter = rateLimit({
     skipSuccessfulRequests: true
 });
 
-// Apply rate limiting
-app.use('/api/', apiLimiter);
-app.use('/api/auth/login', authLimiter);
-app.use('/api/auth/register', authLimiter);
+// More lenient rate limiter for authenticated admin operations
+const adminApiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 200, // Higher limit for admin operations
+    message: 'Too many requests, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+// Apply rate limiting BEFORE routes
+// Note: Order matters - rate limiters must be applied before routes are registered
+// We'll apply them after routes are registered but before they're used
 
 // Middleware
 app.use(cors({
@@ -135,6 +148,22 @@ try {
 
 // Make models available to routes
 app.locals.models = { User, News, Like, Comment, Event, Job, Talent, SalesRental };
+
+// Apply rate limiting to specific routes BEFORE registering them
+// Note: Express applies middleware in order, so more specific routes must come first
+// Auth routes (very strict)
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+// Admin routes (more lenient - will be further restricted by auth middleware)
+app.use('/api/users', adminApiLimiter);
+app.use('/api/news', adminApiLimiter);
+app.use('/api/events', adminApiLimiter);
+app.use('/api/jobs', adminApiLimiter);
+app.use('/api/talents', adminApiLimiter);
+app.use('/api/sales-rentals', adminApiLimiter);
+app.use('/api/comments', adminApiLimiter);
+// Public API routes (stricter - applied last to catch remaining routes)
+app.use('/api/', apiLimiter);
 
 // Routes
 try {
