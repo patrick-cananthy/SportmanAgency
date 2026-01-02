@@ -58,9 +58,9 @@ git push -u origin main
 
 ---
 
-## 🗄️ Step 2: Create Database on Render (IMPORTANT!)
+## 🗄️ Step 2: Create Database on Render (IMPORTANT! DO THIS FIRST!)
 
-**Your app needs a database. Render provides a free one.**
+**⚠️ Your app MUST have a database before it can start. Create this FIRST!**
 
 ### 2.1 Create PostgreSQL Database
 
@@ -68,21 +68,29 @@ git push -u origin main
 2. Click **"New +"** → **"PostgreSQL"**
 3. Fill in:
    - **Name**: `sportsman-db`
-   - **Database**: (leave default)
+   - **Database**: (leave default or name it `sportsman_db`)
    - **Plan**: **Free** ✅
    - **Region**: Same as your web service (or closest)
 4. Click **"Create Database"**
-5. **Wait 2-3 minutes**
+5. **Wait 2-3 minutes** (watch for "Available" status)
 
 ### 2.2 Copy Database Details
 
 1. Click on your database (`sportsman-db`)
-2. **Copy these values** (you'll need them):
-   - **Host** (e.g., `dpg-xxxxx-a.oregon-postgres.render.com`)
+2. **You'll see connection details. Copy these EXACTLY:**
+   
+   **Option A: Use Internal Database URL (Easier)**
+   - Copy the **"Internal Database URL"** (starts with `postgresql://`)
+   - It looks like: `postgresql://user:password@host:5432/database`
+   
+   **Option B: Use Individual Values**
+   - **Host**: (e.g., `dpg-xxxxx-a.oregon-postgres.render.com`)
    - **Port**: `5432`
-   - **Database name** (e.g., `sportsman_db_xxxx`)
-   - **User** (e.g., `sportsman_user`)
-   - **Password** (shown once - **COPY IT NOW!**)
+   - **Database name**: (e.g., `sportsman_db_xxxx`)
+   - **User**: (e.g., `sportsman_user`)
+   - **Password**: (shown once - **COPY IT NOW!** You won't see it again!)
+
+**⚠️ IMPORTANT:** Copy the password immediately - you can't see it again!
 
 ---
 
@@ -109,15 +117,24 @@ Fill in exactly:
 
 ### 3.3 Add Environment Variables
 
+**⚠️ CRITICAL: You MUST create the database (Step 2) FIRST before setting these!**
+
 Click **"Advanced"** → Scroll to **"Environment Variables"**
 
+**If you used Option A (Internal Database URL):**
+Add this ONE variable:
+```
+DATABASE_URL = [paste the entire Internal Database URL from Step 2.2]
+```
+
+**If you used Option B (Individual Values):**
 Add these **one by one** (click "Add Environment Variable" for each):
 
 ```
 NODE_ENV = production
 PORT = 10000
 DB_DIALECT = postgres
-DB_HOST = [paste the Host from Step 2.2]
+DB_HOST = [paste the Host from Step 2.2 - e.g., dpg-xxxxx-a.oregon-postgres.render.com]
 DB_PORT = 5432
 DB_NAME = [paste the Database name from Step 2.2]
 DB_USER = [paste the User from Step 2.2]
@@ -125,13 +142,16 @@ DB_PASSWORD = [paste the Password from Step 2.2]
 JWT_SECRET = SuperSecretKey123!ChangeThisLater
 EMAIL_USER = sportsmantalenta56@gmail.com
 EMAIL_PASS = [your Gmail app password]
-ALLOWED_ORIGINS = https://sportsman-agency.onrender.com
+ALLOWED_ORIGINS = https://sportmanagency-1.onrender.com
 ```
 
-**Important:** 
+**⚠️ CRITICAL NOTES:**
+- **MUST have `DB_DIALECT = postgres`** (not mysql!)
 - Replace `[paste...]` with actual values from your database
+- **NO spaces** around the `=` sign: `DB_HOST=value` (not `DB_HOST = value`)
+- Copy values EXACTLY as shown (no extra spaces)
 - For `EMAIL_PASS`, use your Gmail app password (see `EMAIL_SETUP.md`)
-- For `JWT_SECRET`, use any random string (you can change later)
+- For `ALLOWED_ORIGINS`, use your actual Render URL (check after first deploy)
 
 ### 3.4 Deploy
 
