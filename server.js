@@ -9,8 +9,9 @@ require('dotenv').config();
 const app = express();
 
 // Trust proxy (required for Render and other hosting platforms behind proxies)
-// This allows Express to trust X-Forwarded-* headers from the proxy
-app.set('trust proxy', true);
+// Trust only the first proxy (Render's load balancer)
+// This is more secure than trusting all proxies
+app.set('trust proxy', 1);
 
 // Security Headers
 app.use(helmet({
@@ -34,10 +35,15 @@ const apiLimiter = rateLimit({
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
-    // Skip rate limiting for authenticated admin routes
-    skip: (req) => {
-        // Skip if user is authenticated (will be checked in routes)
-        return false; // We'll handle this in routes
+    // Use a custom key generator that works with Render's proxy
+    keyGenerator: (req) => {
+        // Use X-Forwarded-For header if available (from Render's proxy)
+        // Otherwise fall back to IP address
+        return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress;
+    },
+    // Skip trust proxy validation since we're handling it manually
+    validate: {
+        trustProxy: false
     }
 });
 
@@ -45,7 +51,15 @@ const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // limit each IP to 5 login attempts per windowMs
     message: 'Too many login attempts, please try again later.',
-    skipSuccessfulRequests: true
+    skipSuccessfulRequests: true,
+    // Use a custom key generator that works with Render's proxy
+    keyGenerator: (req) => {
+        return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress;
+    },
+    // Skip trust proxy validation since we're handling it manually
+    validate: {
+        trustProxy: false
+    }
 });
 
 // More lenient rate limiter for authenticated admin operations
@@ -55,6 +69,14 @@ const adminApiLimiter = rateLimit({
     message: 'Too many requests, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,
+    // Use a custom key generator that works with Render's proxy
+    keyGenerator: (req) => {
+        return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress;
+    },
+    // Skip trust proxy validation since we're handling it manually
+    validate: {
+        trustProxy: false
+    }
 });
 
 // Apply rate limiting BEFORE routes
