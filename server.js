@@ -8,6 +8,10 @@ require('dotenv').config();
 
 const app = express();
 
+// Trust proxy (required for Render and other hosting platforms behind proxies)
+// This allows Express to trust X-Forwarded-* headers from the proxy
+app.set('trust proxy', true);
+
 // Security Headers
 app.use(helmet({
     contentSecurityPolicy: {
