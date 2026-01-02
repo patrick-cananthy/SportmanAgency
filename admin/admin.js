@@ -1499,7 +1499,7 @@ function displayUsers(users) {
                 <div class="user-role ${user.role}">${user.role.toUpperCase()}</div>
             </div>
             <div class="user-actions">
-                ${isSuperAdmin ? `<button class="btn btn-sm btn-secondary" onclick="editUser(${user.id})">Edit</button>` : ''}
+                ${isSuperAdmin ? `<button class="btn btn-sm btn-secondary" onclick="window.editUser(${user.id})">Edit</button>` : ''}
                 ${isSuperAdmin && user.id !== parseInt((localStorage.getItem('userId') || sessionStorage.getItem('userId')) || '0') ? 
                     `<button class="btn btn-sm btn-warning" onclick="resetUserPassword(${user.id}, '${user.username}')">Reset Password</button>` : 
                     ''
@@ -1537,23 +1537,40 @@ async function resetUserPassword(userId, username) {
     if (!confirm(`Are you sure you want to reset the password for ${username}?`)) return;
     
     try {
+        // Get fresh token from storage
+        const useRememberMe = localStorage.getItem('rememberMe') === 'true';
+        const currentToken = useRememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
+        
+        if (!currentToken) {
+            alert('Session expired. Please log in again.');
+            logout();
+            return;
+        }
+        
         const response = await fetch(`${API_BASE}/users/${userId}/reset-password`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${authToken}`,
+                'Authorization': `Bearer ${currentToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ newPassword })
         });
         
+        if (response.status === 401) {
+            alert('Session expired. Please log in again.');
+            logout();
+            return;
+        }
+        
         if (response.ok) {
             alert('Password reset successfully!');
             loadUsers();
         } else {
-            const data = await response.json();
+            const data = await response.json().catch(() => ({}));
             alert('Error: ' + (data.message || 'Failed to reset password'));
         }
     } catch (error) {
+        console.error('Error resetting password:', error);
         alert('Network error. Please try again.');
     }
 }
@@ -1581,31 +1598,50 @@ document.getElementById('userModal')?.addEventListener('click', (e) => {
 
 // Show user modal
 function showUserModal(user = null) {
+    console.log('showUserModal called with user:', user);
     const modal = document.getElementById('userModal');
     const form = document.getElementById('userForm');
     const title = document.getElementById('userModalTitle');
     const passwordInput = document.getElementById('userPassword');
     const passwordHelp = document.getElementById('passwordHelp');
     
+    if (!modal) {
+        console.error('User modal not found!');
+        alert('Error: User modal not found. Please refresh the page.');
+        return;
+    }
+    
     if (user) {
         // Edit mode
+        console.log('Setting up edit mode for user:', user);
         title.textContent = 'Edit User';
-        document.getElementById('userId').value = user.id;
-        document.getElementById('userUsername').value = user.username;
-        document.getElementById('userEmail').value = user.email;
-        document.getElementById('userRole').value = user.role;
-        passwordInput.required = false;
-        passwordHelp.style.display = 'block';
+        document.getElementById('userId').value = user.id || '';
+        document.getElementById('userUsername').value = user.username || '';
+        document.getElementById('userEmail').value = user.email || '';
+        document.getElementById('userRole').value = user.role || 'editor';
+        if (passwordInput) {
+            passwordInput.required = false;
+            passwordInput.value = '';
+        }
+        if (passwordHelp) {
+            passwordHelp.style.display = 'block';
+        }
     } else {
         // Add mode
+        console.log('Setting up add mode');
         title.textContent = 'Add New User';
-        form.reset();
+        if (form) form.reset();
         document.getElementById('userId').value = '';
-        passwordInput.required = true;
-        passwordHelp.style.display = 'none';
+        if (passwordInput) {
+            passwordInput.required = true;
+        }
+        if (passwordHelp) {
+            passwordHelp.style.display = 'none';
+        }
     }
     
     modal.classList.add('active');
+    console.log('Modal should be visible now');
 }
 
 // Submit user form
@@ -1649,14 +1685,22 @@ document.getElementById('userForm')?.addEventListener('submit', async (e) => {
     }
     
     try {
+        console.log('Form submitted. UserId:', userId, 'UserData:', userData);
         if (userId) {
             await updateUser(userId, userData);
         } else {
             await createUser(userData);
         }
     } catch (error) {
+        console.error('Form submission error:', error);
         errorDiv.textContent = 'An error occurred. Please try again.';
         errorDiv.classList.add('show');
+    } finally {
+        const submitBtn = document.querySelector('#userForm button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = userId ? 'Update User' : 'Create User';
+        }
     }
 });
 
@@ -1671,14 +1715,18 @@ async function createUser(userData) {
     }
     
     try {
-        if (!authToken) {
+        // Get fresh token from storage
+        const useRememberMe = localStorage.getItem('rememberMe') === 'true';
+        const currentToken = useRememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
+        
+        if (!currentToken) {
             throw new Error('Not authenticated. Please log in again.');
         }
         
         const response = await fetch(`${API_BASE}/users`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${authToken}`,
+                'Authorization': `Bearer ${currentToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(userData)
@@ -1737,23 +1785,36 @@ async function updateUser(id, userData) {
     }
     
     try {
-        if (!authToken) {
+        // Get fresh token from storage
+        const useRememberMe = localStorage.getItem('rememberMe') === 'true';
+        const currentToken = useRememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
+        
+        if (!currentToken) {
             throw new Error('Not authenticated. Please log in again.');
         }
         
         const updateData = { ...userData };
-        if (!updateData.password) delete updateData.password;
+        if (!updateData.password || updateData.password.trim() === '') {
+            delete updateData.password;
+        }
         
         const response = await fetch(`${API_BASE}/users/${id}`, {
             method: 'PUT',
             headers: {
-                'Authorization': `Bearer ${authToken}`,
+                'Authorization': `Bearer ${currentToken}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(updateData)
         });
         
         let errorMessage = 'Failed to update user';
+        
+        if (response.status === 401) {
+            errorDiv.textContent = 'Session expired. Please log in again.';
+            errorDiv.classList.add('show');
+            setTimeout(() => logout(), 2000);
+            return;
+        }
         
         if (!response.ok) {
             try {
@@ -1797,19 +1858,48 @@ async function updateUser(id, userData) {
 
 // Edit user
 async function editUser(id) {
+    console.log('editUser called with id:', id);
     try {
+        // Get fresh token from storage
+        const useRememberMe = localStorage.getItem('rememberMe') === 'true';
+        const currentToken = useRememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
+        
+        console.log('Current token exists:', !!currentToken);
+        
+        if (!currentToken) {
+            alert('Session expired. Please log in again.');
+            logout();
+            return;
+        }
+        
+        console.log('Fetching user:', `${API_BASE}/users/${id}`);
         const response = await fetch(`${API_BASE}/users/${id}`, {
-            headers: { 'Authorization': `Bearer ${authToken}` }
+            headers: { 
+                'Authorization': `Bearer ${currentToken}`,
+                'Content-Type': 'application/json'
+            }
         });
         
+        console.log('Response status:', response.status);
+        
+        if (response.status === 401) {
+            alert('Session expired. Please log in again.');
+            logout();
+            return;
+        }
+        
         if (!response.ok) {
-            throw new Error('Failed to load user');
+            const errorData = await response.json().catch(() => ({}));
+            console.error('Error response:', errorData);
+            throw new Error(errorData.message || 'Failed to load user');
         }
         
         const user = await response.json();
+        console.log('User loaded:', user);
         showUserModal(user);
     } catch (error) {
-        alert('Error loading user: ' + error.message);
+        console.error('Error loading user:', error);
+        alert('Error loading user: ' + (error.message || 'Unknown error'));
     }
 }
 
@@ -1818,9 +1908,22 @@ async function deleteUser(id) {
     if (!confirm('Are you sure you want to delete this user?')) return;
     
     try {
+        // Get fresh token from storage
+        const useRememberMe = localStorage.getItem('rememberMe') === 'true';
+        const currentToken = useRememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
+        
+        if (!currentToken) {
+            alert('Session expired. Please log in again.');
+            logout();
+            return;
+        }
+        
         const response = await fetch(`${API_BASE}/users/${id}`, {
             method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${authToken}` }
+            headers: { 
+                'Authorization': `Bearer ${currentToken}`,
+                'Content-Type': 'application/json'
+            }
         });
         
         if (response.ok) {

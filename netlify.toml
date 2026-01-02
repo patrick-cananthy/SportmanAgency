@@ -1,0 +1,17 @@
+# ⚠️ NOTE: This file is for reference only
+# Netlify cannot host full Node.js applications
+# Use Render.com or MyTrueHost instead
+# See SIMPLE_DEPLOY_STEPS.md for instructions
+
+[build]
+  command = "npm install"
+  publish = "public"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build.environment]
+  NODE_VERSION = "18"
+

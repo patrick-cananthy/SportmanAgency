@@ -148,6 +148,7 @@ try {
     app.use('/api/jobs', require('./routes/jobs'));
     app.use('/api/talents', require('./routes/talents'));
     app.use('/api/sales-rentals', require('./routes/salesRentals'));
+    app.use('/api/contact', require('./routes/contact'));
     console.log('✓ Routes registered successfully');
 } catch (error) {
     console.error('✗ Error registering routes:', error);

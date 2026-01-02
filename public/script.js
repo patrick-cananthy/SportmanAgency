@@ -28,9 +28,22 @@ dropdowns.forEach(dropdown => {
     
     if (dropdownLink) {
         dropdownLink.addEventListener('click', (e) => {
+            // Always allow dropdown toggle on mobile, prevent navigation
             if (window.innerWidth <= 768) {
                 e.preventDefault();
+                e.stopPropagation();
                 dropdown.classList.toggle('active');
+            }
+        });
+    }
+});
+
+// Close dropdown when clicking outside on mobile
+document.addEventListener('click', (e) => {
+    if (window.innerWidth <= 768) {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.contains(e.target)) {
+                dropdown.classList.remove('active');
             }
         });
     }
@@ -188,21 +201,54 @@ const contactFormCareers = document.getElementById('contactFormCareers');
 
 function handleFormSubmit(form, formType) {
     if (form) {
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             // Get form values
             const formData = new FormData(form);
             const data = Object.fromEntries(formData);
+            data.formType = formType;
             
-            // Simulate form submission (replace with actual API call)
-            console.log(`Form submitted (${formType}):`, data);
+            // Get submit button
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn ? submitBtn.textContent : 'Submit';
             
-            // Show success message
-            alert(`Thank you for your ${formType} inquiry! We'll get back to you soon.`);
+            // Disable button and show loading
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Sending...';
+            }
             
-            // Reset form
-            form.reset();
+            try {
+                const response = await fetch('/api/contact/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show success message
+                    alert(result.message || `Thank you for your ${formType} inquiry! We'll get back to you soon.`);
+                    // Reset form
+                    form.reset();
+                } else {
+                    // Show error message
+                    alert(result.message || 'Failed to send message. Please try again or contact us directly.');
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('Network error. Please try again or contact us directly at the email addresses provided.');
+            } finally {
+                // Re-enable button
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            }
         });
     }
 }
