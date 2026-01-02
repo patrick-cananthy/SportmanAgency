@@ -29,37 +29,21 @@ app.use(helmet({
 }));
 
 // Rate Limiting
+// With trust proxy set to 1, express-rate-limit will automatically handle IP extraction
+// and IPv6 addresses correctly, so we don't need a custom keyGenerator
 const apiLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100, // limit each IP to 100 requests per windowMs
     message: 'Too many requests from this IP, please try again later.',
     standardHeaders: true,
-    legacyHeaders: false,
-    // Use a custom key generator that works with Render's proxy
-    keyGenerator: (req) => {
-        // Use X-Forwarded-For header if available (from Render's proxy)
-        // Otherwise fall back to IP address
-        return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress;
-    },
-    // Skip trust proxy validation since we're handling it manually
-    validate: {
-        trustProxy: false
-    }
+    legacyHeaders: false
 });
 
 const authLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // limit each IP to 5 login attempts per windowMs
     message: 'Too many login attempts, please try again later.',
-    skipSuccessfulRequests: true,
-    // Use a custom key generator that works with Render's proxy
-    keyGenerator: (req) => {
-        return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress;
-    },
-    // Skip trust proxy validation since we're handling it manually
-    validate: {
-        trustProxy: false
-    }
+    skipSuccessfulRequests: true
 });
 
 // More lenient rate limiter for authenticated admin operations
@@ -68,15 +52,7 @@ const adminApiLimiter = rateLimit({
     max: 200, // Higher limit for admin operations
     message: 'Too many requests, please try again later.',
     standardHeaders: true,
-    legacyHeaders: false,
-    // Use a custom key generator that works with Render's proxy
-    keyGenerator: (req) => {
-        return req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip || req.socket.remoteAddress;
-    },
-    // Skip trust proxy validation since we're handling it manually
-    validate: {
-        trustProxy: false
-    }
+    legacyHeaders: false
 });
 
 // Apply rate limiting BEFORE routes
