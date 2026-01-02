@@ -161,7 +161,8 @@ app.use('/admin', express.static('admin'));
 // Test connection and sync models
 sequelize.authenticate()
     .then(() => {
-        console.log('✓ MySQL Connected');
+        const dbType = process.env.DB_DIALECT || 'mysql';
+        console.log(`✓ ${dbType.toUpperCase()} Database Connected`);
         // Sync database (create tables if they don't exist)
         return sequelize.sync({ alter: true });
     })
@@ -170,8 +171,14 @@ sequelize.authenticate()
     })
     .catch(err => {
         console.error('✗ Database Error:', err.message);
-        console.error('   → Check your .env file and MySQL connection');
-        console.error('   → Make sure MySQL server is running');
+        console.error('   → Check your .env file and database connection');
+        console.error('   → Verify DB_HOST, DB_USER, DB_PASSWORD, DB_NAME are correct');
+        console.error('   → Make sure database server is running and accessible');
+        if (process.env.DB_DIALECT === 'postgres') {
+            console.error('   → For PostgreSQL: Check SSL settings and connection string');
+        } else {
+            console.error('   → For MySQL: Check if external connections are allowed');
+        }
         process.exit(1);
     });
 
