@@ -291,9 +291,17 @@ window.initHeroCarousel = function() {
                 });
                 // Play current video
                 video.currentTime = 0;
-                video.play().catch(error => {
-                    console.log('Video autoplay prevented:', error);
-                });
+                video.load();
+                const playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise
+                        .then(() => {
+                            console.log('Video playing');
+                        })
+                        .catch(error => {
+                            console.log('Video autoplay prevented:', error);
+                        });
+                }
             }
         }
         if (heroIndicators[index]) {
@@ -313,13 +321,39 @@ window.initHeroCarousel = function() {
             video.setAttribute('playsinline', '');
             video.setAttribute('muted', '');
             video.setAttribute('loop', '');
+            video.setAttribute('autoplay', '');
             video.muted = true;
             video.loop = true;
+            video.playsInline = true;
+            
+            // Load video
+            video.load();
+            
             // Only play the first video initially
             if (index === 0) {
-                video.play().catch(error => {
-                    console.log('Video autoplay prevented for slide', index, error);
-                });
+                // Try to play after video is loaded
+                const tryPlay = () => {
+                    const playPromise = video.play();
+                    if (playPromise !== undefined) {
+                        playPromise
+                            .then(() => {
+                                console.log('Video playing successfully');
+                            })
+                            .catch(error => {
+                                console.log('Video autoplay prevented:', error);
+                                // Try again after user interaction
+                                document.addEventListener('click', () => {
+                                    video.play().catch(e => console.log('Still cannot play:', e));
+                                }, { once: true });
+                            });
+                    }
+                };
+                
+                if (video.readyState >= 2) {
+                    tryPlay();
+                } else {
+                    video.addEventListener('loadeddata', tryPlay, { once: true });
+                }
             } else {
                 video.pause();
             }

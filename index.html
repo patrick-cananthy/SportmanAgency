@@ -58,7 +58,7 @@
         <div class="hero-carousel">
             <!-- Video 1: Football/Soccer -->
             <div class="hero-slide active">
-                <video muted loop playsinline class="hero-video" preload="auto">
+                <video muted loop playsinline autoplay class="hero-video" preload="auto">
                     <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
                 </video>
                 <div class="hero-overlay"></div>
@@ -67,14 +67,14 @@
             <div class="hero-slide">
                 <video muted loop playsinline class="hero-video" preload="auto">
                     <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
-             </video>
+                </video>
                 <div class="hero-overlay"></div>
             </div>
             <!-- Video 3: Basketball -->
             <div class="hero-slide">
                 <video muted loop playsinline class="hero-video" preload="auto">
                     <source src="https://videos.pexels.com/video-files/3045163/3045163-hd_1920_1080_25fps.mp4" type="video/mp4">
-               </video>
+                </video>
                 <div class="hero-overlay"></div>
             </div>
             <!-- Video 4: Team Sports -->
@@ -455,51 +455,11 @@
                 <h2 class="section-title">News & Insights</h2>
                 <p class="section-subtitle">Latest updates and <em>thought leadership</em></p>
             </div>
-            <div class="news-grid">
-                <article class="news-card featured">
-                    <div class="news-image">
-                        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80" alt="Partnership Announcement" loading="lazy">
-                    </div>
-                    <div class="news-content">
-                        <div class="news-date">January 15, 2025</div>
-                        <h3>Major Partnership Announcement</h3>
-                        <p>Sportsman Talent Agency announces new five-year partnership with global sports foundation to support athlete development programs worldwide.</p>
-                        <a href="/news.html" class="news-link">Read More →</a>
-                    </div>
-                </article>
-                <article class="news-card">
-                    <div class="news-image">
-                        <img src="https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&h=400&fit=crop&q=80" alt="Championship Success" loading="lazy">
-                    </div>
-                    <div class="news-content">
-                        <div class="news-date">January 10, 2025</div>
-                        <h3>Championship Success</h3>
-                        <p>Our athletes achieve record-breaking performances in international competition, securing multiple world records and championship titles.</p>
-                        <a href="/news.html" class="news-link">Read More →</a>
-                    </div>
-                </article>
-                <article class="news-card">
-                    <div class="news-image">
-                        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&h=400&fit=crop&q=80" alt="Brand Campaign" loading="lazy">
-                    </div>
-                    <div class="news-content">
-                        <div class="news-date">January 5, 2025</div>
-                        <h3>Brand Campaign Launch</h3>
-                        <p>New innovative marketing campaign breaks engagement records across platforms, reaching over 100 million viewers in first week.</p>
-                        <a href="/news.html" class="news-link">Read More →</a>
-                    </div>
-                </article>
-                <article class="news-card">
-                    <div class="news-image">
-                        <img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600&h=400&fit=crop&q=80" alt="Industry Insights" loading="lazy">
-                    </div>
-                    <div class="news-content">
-                        <div class="news-date">December 28, 2024</div>
-                        <h3>Industry Insights: The Future of Sports Marketing</h3>
-                        <p>Our team shares insights on emerging trends in sports marketing and how brands can connect with fans in the digital age.</p>
-                        <a href="/news.html" class="news-link">Read More →</a>
-                    </div>
-                </article>
+            <div class="news-grid" id="newsGrid">
+                <!-- News will be loaded dynamically from API -->
+                <div class="news-loading" style="text-align: center; padding: 2rem; color: var(--text-light);">
+                    Loading news...
+                </div>
             </div>
             <div class="news-link-all">
                 <a href="/news.html" class="link-all">See All News & Insights →</a>
@@ -747,57 +707,67 @@
     <script>
         // Load news from API
         async function loadNewsFromAPI() {
+            const newsGrid = document.getElementById('newsGrid') || document.querySelector('.news-grid');
+            if (!newsGrid) return;
+            
             try {
                 // Use relative path to work with any port
                 const response = await fetch('/api/news?published=true&limit=4');
                 
                 if (!response.ok) {
                     console.error('API response not OK:', response.status, response.statusText);
-                    return; // Keep static content
+                    // Show message if API is not available (e.g., GitHub Pages)
+                    if (window.location.hostname.includes('github.io') || window.location.hostname.includes('netlify.app')) {
+                        newsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-light);">News content requires a backend server. Please visit the deployed version on Render.</p>';
+                    } else {
+                        newsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-light);">Unable to load news. Please check your connection.</p>';
+                    }
+                    return;
                 }
                 
                 const news = await response.json();
                 console.log('Loaded news from API:', news.length, 'articles');
                 
                 if (news && news.length > 0) {
-                    const newsGrid = document.querySelector('.news-grid');
-                    if (newsGrid) {
-                        newsGrid.innerHTML = '';
+                    newsGrid.innerHTML = '';
+                    
+                    news.forEach((item, index) => {
+                        const article = document.createElement('article');
+                        article.className = `news-card ${index === 0 ? 'featured' : ''}`;
                         
-                        news.forEach((item, index) => {
-                            const article = document.createElement('article');
-                            article.className = `news-card ${index === 0 ? 'featured' : ''}`;
-                            
-                            const date = new Date(item.publishDate).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric'
-                            });
-                            
-                            const imageUrl = item.image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80';
-                            
-                            article.innerHTML = `
-                                <div class="news-image">
-                                    <img src="${imageUrl}" alt="${item.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80'">
-                                </div>
-                                <div class="news-content">
-                                    <div class="news-date">${date}</div>
-                                    <h3>${item.title}</h3>
-                                    <p>${item.excerpt}</p>
-                                    <a href="/news.html?id=${item.id}" class="news-link">Read More →</a>
-                                </div>
-                            `;
-                            
-                            newsGrid.appendChild(article);
+                        const date = new Date(item.publishDate).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
                         });
-                    }
+                        
+                        const imageUrl = item.image || 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80';
+                        
+                        article.innerHTML = `
+                            <div class="news-image">
+                                <img src="${imageUrl}" alt="${item.title}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=500&fit=crop&q=80'">
+                            </div>
+                            <div class="news-content">
+                                <div class="news-date">${date}</div>
+                                <h3>${item.title}</h3>
+                                <p>${item.excerpt}</p>
+                                <a href="/news.html?id=${item.id}" class="news-link">Read More →</a>
+                            </div>
+                        `;
+                        
+                        newsGrid.appendChild(article);
+                    });
                 } else {
-                    console.log('No published articles found. Showing static content.');
+                    newsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-light);">No published articles found. Check back soon!</p>';
                 }
             } catch (error) {
                 console.error('Error loading news:', error);
-                console.error('Make sure you are accessing the site through the server (http://localhost:3005), not as a file.');
-                // If API fails, keep the static content
+                // Show appropriate message based on environment
+                if (window.location.hostname.includes('github.io') || window.location.hostname.includes('netlify.app')) {
+                    newsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-light);">News content requires a backend server. Please visit the deployed version on Render.</p>';
+                } else {
+                    newsGrid.innerHTML = '<p style="text-align: center; padding: 2rem; color: var(--text-light);">Error loading news. Please refresh the page.</p>';
+                }
             }
         }
         

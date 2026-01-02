@@ -166,8 +166,56 @@ sequelize.authenticate()
         // Sync database (create tables if they don't exist)
         return sequelize.sync({ alter: true });
     })
-    .then(() => {
+    .then(async () => {
         console.log('✓ Database synced - All tables ready');
+        
+        // Auto-create default super admin if none exists
+        try {
+            const existingSuperAdmin = await User.findOne({
+                where: { role: 'super_admin' }
+            });
+            
+            if (!existingSuperAdmin) {
+                const defaultEmail = 'admin@sportsmantalent.com';
+                const defaultUsername = 'superadmin';
+                const defaultPassword = 'Admin@2026';
+                
+                // Check if username or email is already taken
+                const existingUser = await User.findOne({
+                    where: {
+                        [require('sequelize').Op.or]: [
+                            { email: defaultEmail },
+                            { username: defaultUsername }
+                        ]
+                    }
+                });
+                
+                if (!existingUser) {
+                    const superAdmin = await User.create({
+                        username: defaultUsername,
+                        email: defaultEmail,
+                        password: defaultPassword, // Will be hashed by beforeCreate hook
+                        role: 'super_admin',
+                        lastActivity: new Date()
+                    });
+                    
+                    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    console.log('✓ Default Super Admin Created');
+                    console.log('   Username: superadmin');
+                    console.log('   Email: admin@sportsmantalent.com');
+                    console.log('   Password: Admin@2026');
+                    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+                    console.log('⚠️  IMPORTANT: Change this password after first login!');
+                } else {
+                    console.log('⚠️  Super Admin already exists or username/email is taken');
+                }
+            } else {
+                console.log('✓ Super Admin account exists');
+            }
+        } catch (error) {
+            console.error('⚠️  Could not create default super admin:', error.message);
+            console.log('   You can create one manually using: node create-default-super-admin.js');
+        }
     })
     .catch(err => {
         console.error('✗ Database Error:', err.message);
