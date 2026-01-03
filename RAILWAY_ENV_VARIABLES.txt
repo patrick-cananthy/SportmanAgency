@@ -1,0 +1,31 @@
+# Railway Environment Variables for Web Service
+# Copy these EXACTLY into your Railway web service Variables tab
+
+# OPTION 1: Use MYSQL_URL (Recommended for Railway)
+# This is the easiest way - Railway provides this automatically
+# Just reference it from your database service:
+MYSQL_URL=${{YourDatabaseServiceName.MYSQL_URL}}
+
+# OR OPTION 2: Use Individual Variables
+# Database Configuration
+DB_DIALECT=mysql
+DB_HOST=mysql.railway.internal
+DB_PORT=3306
+DB_NAME=railway
+DB_USER=root
+DB_PASSWORD=WNJoiCDYATKWMZRYFpLsQfBxWKwBeYiP
+
+# Application Configuration
+PORT=3005
+NODE_ENV=production
+JWT_SECRET=your-super-secret-key-change-this-in-production
+
+# CORS Configuration (Update with your actual Railway domain)
+ALLOWED_ORIGINS=https://your-app-name.up.railway.app
+
+# IMPORTANT NOTES:
+# 1. If using MYSQL_URL, you don't need DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
+# 2. MYSQL_URL format: mysql://root:password@mysql.railway.internal:3306/railway
+# 3. To use MYSQL_URL: Reference it from your database service using Railway's variable reference
+# 4. Replace "YourDatabaseServiceName" with your actual database service name in Railway
+

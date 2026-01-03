@@ -265,12 +265,29 @@ sequelize.authenticate()
         console.error('   → Check your .env file and database connection');
         console.error('   → Verify DB_HOST, DB_USER, DB_PASSWORD, DB_NAME are correct');
         console.error('   → Make sure database server is running and accessible');
+        
+        // Log environment variables for debugging (without sensitive data)
+        console.error('\n   Current Database Configuration:');
+        console.error('   DB_DIALECT:', process.env.DB_DIALECT || 'not set');
+        console.error('   DB_HOST:', process.env.DB_HOST || 'not set');
+        console.error('   DB_PORT:', process.env.DB_PORT || 'not set');
+        console.error('   DB_NAME:', process.env.DB_NAME || 'not set');
+        console.error('   DB_USER:', process.env.DB_USER || 'not set');
+        console.error('   DB_PASSWORD:', process.env.DB_PASSWORD ? '***' : 'not set');
+        console.error('   MYSQL_URL:', process.env.MYSQL_URL ? 'set' : 'not set');
+        console.error('   DATABASE_URL:', process.env.DATABASE_URL ? 'set' : 'not set');
+        
         if (process.env.DB_DIALECT === 'postgres') {
             console.error('   → For PostgreSQL: Check SSL settings and connection string');
         } else {
             console.error('   → For MySQL: Check if external connections are allowed');
+            console.error('   → For Railway: Try using MYSQL_URL connection string instead');
         }
-        process.exit(1);
+        
+        // Don't exit in production - let the app try to reconnect
+        if (process.env.NODE_ENV !== 'production') {
+            process.exit(1);
+        }
     });
 
 const PORT = process.env.PORT || 3000;
