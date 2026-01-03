@@ -81,14 +81,21 @@ router.post('/login', [
         if (!user) {
             console.log(`[AUTH] Login attempt failed: User not found for email: ${email}`);
             // Don't reveal if user exists or not for security
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.status(401).json({ 
+                message: 'Invalid credentials',
+                hint: 'Check your email and password. Default: admin@sportsmantalent.com / Admin@2026'
+            });
         }
 
         // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
             console.log(`[AUTH] Login attempt failed: Invalid password for user: ${user.email}`);
-            return res.status(401).json({ message: 'Invalid credentials' });
+            console.log(`[AUTH] Attempted password: ${password.substring(0, 3)}***`);
+            return res.status(401).json({ 
+                message: 'Invalid credentials',
+                hint: 'Password is case-sensitive. Default password: Admin@2026'
+            });
         }
         
         console.log(`[AUTH] Login successful for user: ${user.email} (${user.role})`);
