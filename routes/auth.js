@@ -71,17 +71,27 @@ router.post('/login', [
         const { email, password } = req.body;
         const User = getUserModel(req);
 
-        // Find user
-        const user = await User.findOne({ where: { email } });
+        // Find user (case-insensitive email search)
+        const user = await User.findOne({ 
+            where: { 
+                email: email.toLowerCase().trim() 
+            } 
+        });
+        
         if (!user) {
+            console.log(`[AUTH] Login attempt failed: User not found for email: ${email}`);
+            // Don't reveal if user exists or not for security
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
         // Check password
         const isMatch = await user.comparePassword(password);
         if (!isMatch) {
+            console.log(`[AUTH] Login attempt failed: Invalid password for user: ${user.email}`);
             return res.status(401).json({ message: 'Invalid credentials' });
         }
+        
+        console.log(`[AUTH] Login successful for user: ${user.email} (${user.role})`);
 
         // Update last activity
         await user.update({ lastActivity: new Date() });

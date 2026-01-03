@@ -252,12 +252,16 @@ sequelize.authenticate()
                     console.log('⚠️  IMPORTANT: Change this password after first login!');
                 } else {
                     console.log('⚠️  Admin already exists or username/email is taken');
+                    console.log('   Existing user:', existingUser.email, existingUser.username);
                 }
             } else {
                 console.log('✓ Admin account exists');
+                console.log('   Admin email:', existingAdmin.email);
+                console.log('   Admin username:', existingAdmin.username);
             }
         } catch (error) {
             console.error('⚠️  Could not create default admin:', error.message);
+            console.error('   Error details:', error);
         }
     })
     .catch(err => {
