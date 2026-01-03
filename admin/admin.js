@@ -6,7 +6,9 @@ const useRememberMe = localStorage.getItem('rememberMe') === 'true';
 let authToken = useRememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
 let currentNewsId = null;
 let inactivityTimer = null;
+let lastVerifyTime = 0;
 const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes in milliseconds
+const VERIFY_INTERVAL = 5 * 60 * 1000; // Verify token every 5 minutes (not on every activity)
 
 // Activity tracking for auto-logout
 function resetInactivityTimer() {
@@ -16,8 +18,11 @@ function resetInactivityTimer() {
         logout();
     }, INACTIVITY_TIMEOUT);
     
-    // Refresh token periodically to update lastActivity
-    if (authToken) {
+    // Refresh token periodically to update lastActivity (throttled to avoid rate limiting)
+    const now = Date.now();
+    if (authToken && (now - lastVerifyTime) > VERIFY_INTERVAL) {
+        lastVerifyTime = now;
+        
         // Update token from storage in case it changed
         const rememberMe = localStorage.getItem('rememberMe') === 'true';
         authToken = rememberMe ? localStorage.getItem('authToken') : sessionStorage.getItem('authToken');
@@ -156,18 +161,10 @@ async function verifyToken() {
 
 // Update UI based on user role
 function updateUIForRole(role) {
-    if (role === 'super_admin') {
-        // Super admin can see everything
+    if (role === 'admin') {
+        // Admin can see everything
         document.querySelectorAll('.admin-only, .super-admin-only').forEach(el => {
             el.style.display = 'block';
-        });
-    } else if (role === 'admin') {
-        // Regular admin - hide user management
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'block';
-        });
-        document.querySelectorAll('.super-admin-only').forEach(el => {
-            el.style.display = 'none';
         });
     } else {
         // Editor - hide admin features
@@ -197,6 +194,150 @@ document.getElementById('logoutBtn')?.addEventListener('click', () => {
     logout();
 });
 
+// Services Management - Define functions early so they're available for navigation
+let currentServiceId = null;
+
+// Load services
+async function loadServices() {
+    try {
+        const response = await fetch(`${API_BASE}/services`);
+        const services = await response.json();
+        displayServices(services);
+    } catch (error) {
+        console.error('Error loading services:', error);
+        const servicesList = document.getElementById('servicesList');
+        if (servicesList) {
+            servicesList.innerHTML = '<p>Error loading services</p>';
+        }
+    }
+}
+
+// Display services
+function displayServices(services) {
+    const servicesList = document.getElementById('servicesList');
+    if (!servicesList) return;
+    
+    servicesList.innerHTML = '';
+
+    if (services.length === 0) {
+        servicesList.innerHTML = '<p>No services yet. Click "Add New Service" to get started.</p>';
+        return;
+    }
+
+    services.forEach(service => {
+        const serviceItem = document.createElement('div');
+        serviceItem.className = 'news-item';
+        
+        const imageUrl = service.image || 'https://via.placeholder.com/150x100?text=No+Image';
+        const badges = [];
+        if (service.featured) badges.push('<span class="badge badge-featured">Featured</span>');
+        if (service.published) badges.push('<span class="badge badge-published">Published</span>');
+        else badges.push('<span class="badge badge-draft">Draft</span>');
+
+        serviceItem.innerHTML = `
+            <img src="${imageUrl}" alt="${service.title}" class="news-item-image" data-fallback="https://via.placeholder.com/150x100?text=No+Image">
+            <div class="news-item-content">
+                <div class="news-item-header">
+                    <div>
+                        <h3 class="news-item-title">${service.title}</h3>
+                        <div class="news-item-meta">
+                            Order: ${service.order} • Slug: ${service.slug}
+                            ${badges.join(' ')}
+                        </div>
+                    </div>
+                </div>
+                <p class="news-item-excerpt">${service.shortDescription || service.description || ''}</p>
+                <div class="news-item-actions">
+                    <button class="btn btn-primary" data-action="edit-service" data-id="${service.id}">Edit</button>
+                    <button class="btn btn-danger" data-action="delete-service" data-id="${service.id}">Delete</button>
+                </div>
+            </div>
+        `;
+        servicesList.appendChild(serviceItem);
+    });
+}
+
+// Edit service
+function editService(id) {
+    currentServiceId = id;
+    fetch(`${API_BASE}/services/${id}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Failed to load service');
+            }
+            return res.json();
+        })
+        .then(service => {
+            document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+            document.getElementById('serviceId').value = service.id;
+            document.getElementById('serviceTitle').value = service.title || '';
+            document.getElementById('serviceDescription').value = service.description || '';
+            document.getElementById('serviceShortDescription').value = service.shortDescription || '';
+            document.getElementById('serviceSlug').value = service.slug || '';
+            
+            // Handle features - can be array or string
+            let featuresText = '';
+            if (Array.isArray(service.features)) {
+                featuresText = service.features.join('\n');
+            } else if (service.features) {
+                featuresText = service.features;
+            }
+            document.getElementById('serviceFeatures').value = featuresText;
+            
+            document.getElementById('serviceIcon').value = service.icon || '';
+            document.getElementById('serviceOrder').value = service.order || 0;
+            document.getElementById('serviceFeatured').checked = service.featured || false;
+            document.getElementById('servicePublished').checked = service.published || false;
+            
+            const shortDescCount = (service.shortDescription || '').length;
+            document.getElementById('serviceShortDescCount').textContent = `${shortDescCount}/500 characters`;
+            
+            const preview = document.getElementById('serviceImagePreview');
+            if (service.image && preview) {
+                preview.innerHTML = `<img src="${service.image}" alt="Current image" style="max-width: 200px; margin-top: 10px;">`;
+            } else if (preview) {
+                preview.innerHTML = '';
+            }
+            
+            document.getElementById('serviceModal').classList.add('active');
+        })
+        .catch(error => {
+            console.error('Error loading service:', error);
+            alert('Error loading service: ' + error.message);
+        });
+}
+
+// Delete service
+function deleteService(id) {
+    if (!confirm('Are you sure you want to delete this service?')) return;
+
+    if (!authToken) {
+        alert('Please log in again');
+        logout();
+        return;
+    }
+
+    fetch(`${API_BASE}/services/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${authToken}`
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            loadServices();
+        } else {
+            return res.json().then(data => {
+                throw new Error(data.message || 'Error deleting service');
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Delete service error:', error);
+        alert('Error: ' + error.message);
+    });
+}
+
 // Navigation
 document.querySelectorAll('.nav-item').forEach(item => {
     item.addEventListener('click', (e) => {
@@ -223,6 +364,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
             document.getElementById('addJobBtn').style.display = 'none';
             document.getElementById('addTalentBtn').style.display = 'none';
             document.getElementById('addSalesRentalBtn').style.display = 'none';
+            document.getElementById('addServiceBtn').style.display = 'none';
             loadEvents();
         } else if (page === 'jobs') {
             showContentPage('jobsPage');
@@ -232,6 +374,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
             document.getElementById('addJobBtn').style.display = 'block';
             document.getElementById('addTalentBtn').style.display = 'none';
             document.getElementById('addSalesRentalBtn').style.display = 'none';
+            document.getElementById('addServiceBtn').style.display = 'none';
             loadJobs();
         } else if (page === 'talents') {
             showContentPage('talentsPage');
@@ -241,6 +384,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
             document.getElementById('addJobBtn').style.display = 'none';
             document.getElementById('addTalentBtn').style.display = 'block';
             document.getElementById('addSalesRentalBtn').style.display = 'none';
+            document.getElementById('addServiceBtn').style.display = 'none';
             loadTalents();
         } else if (page === 'sales-rentals') {
             showContentPage('salesRentalsPage');
@@ -250,7 +394,18 @@ document.querySelectorAll('.nav-item').forEach(item => {
             document.getElementById('addJobBtn').style.display = 'none';
             document.getElementById('addTalentBtn').style.display = 'none';
             document.getElementById('addSalesRentalBtn').style.display = 'block';
+            document.getElementById('addServiceBtn').style.display = 'none';
             loadSalesRentals();
+        } else if (page === 'services') {
+            showContentPage('servicesPage');
+            document.getElementById('pageTitle').textContent = 'Services';
+            document.getElementById('addNewsBtn').style.display = 'none';
+            document.getElementById('addEventBtn').style.display = 'none';
+            document.getElementById('addJobBtn').style.display = 'none';
+            document.getElementById('addTalentBtn').style.display = 'none';
+            document.getElementById('addSalesRentalBtn').style.display = 'none';
+            document.getElementById('addServiceBtn').style.display = 'block';
+            loadServices();
         } else if (page === 'comments') {
             showContentPage('commentsPage');
             document.getElementById('pageTitle').textContent = 'Comments';
@@ -259,6 +414,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
             document.getElementById('addJobBtn').style.display = 'none';
             document.getElementById('addTalentBtn').style.display = 'none';
             document.getElementById('addSalesRentalBtn').style.display = 'none';
+            document.getElementById('addServiceBtn').style.display = 'none';
             loadComments();
         } else if (page === 'stats') {
             showContentPage('statsPage');
@@ -326,7 +482,7 @@ function displayNews(news) {
             else badges.push('<span class="badge badge-draft">Draft</span>');
 
             newsItem.innerHTML = `
-                <img src="${imageUrl}" alt="${item.title}" class="news-item-image" onerror="this.src='https://via.placeholder.com/150x100?text=No+Image'">
+                <img src="${imageUrl}" alt="${item.title}" class="news-item-image" data-fallback="https://via.placeholder.com/150x100?text=No+Image">
                 <div class="news-item-content">
                     <div class="news-item-header">
                         <div>
@@ -339,8 +495,8 @@ function displayNews(news) {
                     </div>
                     <p class="news-item-excerpt">${item.excerpt}</p>
                     <div class="news-item-actions">
-                        <button class="btn btn-primary" onclick="editNews(${item.id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteNews(${item.id})">Delete</button>
+                        <button class="btn btn-primary" data-action="edit-news" data-id="${item.id}">Edit</button>
+                        <button class="btn btn-danger" data-action="delete-news" data-id="${item.id}">Delete</button>
                     </div>
                 </div>
             `;
@@ -523,8 +679,8 @@ function displayEvents(events) {
                 </div>
             </div>
             <div class="news-item-actions">
-                <button onclick="editEvent(${event.id})" class="btn btn-sm btn-secondary">Edit</button>
-                <button onclick="deleteEvent(${event.id})" class="btn btn-sm btn-danger">Delete</button>
+                <button class="btn btn-sm btn-secondary" data-action="edit-event" data-id="${event.id}">Edit</button>
+                <button class="btn btn-sm btn-danger" data-action="delete-event" data-id="${event.id}">Delete</button>
             </div>
         `;
         eventsList.appendChild(eventItem);
@@ -725,8 +881,8 @@ function displayJobs(jobs) {
                 </div>
             </div>
             <div class="news-item-actions">
-                <button onclick="editJob(${job.id})" class="btn btn-sm btn-secondary">Edit</button>
-                <button onclick="deleteJob(${job.id})" class="btn btn-sm btn-danger">Delete</button>
+                <button class="btn btn-sm btn-secondary" data-action="edit-job" data-id="${job.id}">Edit</button>
+                <button class="btn btn-sm btn-danger" data-action="delete-job" data-id="${job.id}">Delete</button>
             </div>
         `;
         jobsList.appendChild(jobItem);
@@ -901,8 +1057,8 @@ function displayTalents(talents) {
                 </div>
             </div>
             <div class="news-item-actions">
-                <button onclick="editTalent(${talent.id})" class="btn btn-sm btn-secondary">Edit</button>
-                <button onclick="deleteTalent(${talent.id})" class="btn btn-sm btn-danger">Delete</button>
+                <button class="btn btn-sm btn-secondary" data-action="edit-talent" data-id="${talent.id}">Edit</button>
+                <button class="btn btn-sm btn-danger" data-action="delete-talent" data-id="${talent.id}">Delete</button>
             </div>
         `;
         talentsList.appendChild(talentItem);
@@ -1093,8 +1249,8 @@ function displaySalesRentals(items) {
                 </div>
             </div>
             <div class="news-item-actions">
-                <button onclick="editSalesRental(${item.id})" class="btn btn-sm btn-secondary">Edit</button>
-                <button onclick="deleteSalesRental(${item.id})" class="btn btn-sm btn-danger">Delete</button>
+                <button class="btn btn-sm btn-secondary" data-action="edit-sales-rental" data-id="${item.id}">Edit</button>
+                <button class="btn btn-sm btn-danger" data-action="delete-sales-rental" data-id="${item.id}">Delete</button>
             </div>
         `;
         salesRentalsList.appendChild(itemElement);
@@ -1241,6 +1397,207 @@ async function deleteSalesRental(id) {
     }
 }
 
+// Service event handlers and form submission (defined after navigation)
+
+// Add service button
+const addServiceBtn = document.getElementById('addServiceBtn');
+if (addServiceBtn) {
+    addServiceBtn.addEventListener('click', () => {
+        currentServiceId = null;
+        const modal = document.getElementById('serviceModal');
+        const modalTitle = document.getElementById('serviceModalTitle');
+        const form = document.getElementById('serviceForm');
+        const preview = document.getElementById('serviceImagePreview');
+        const counter = document.getElementById('serviceShortDescCount');
+        const orderInput = document.getElementById('serviceOrder');
+        
+        if (modalTitle) modalTitle.textContent = 'Add New Service';
+        if (form) form.reset();
+        if (preview) preview.innerHTML = '';
+        if (counter) counter.textContent = '0/500 characters';
+        if (orderInput) orderInput.value = '0';
+        if (modal) modal.classList.add('active');
+    });
+}
+
+// Close service modal
+const closeServiceModal = () => {
+    document.getElementById('serviceModal')?.classList.remove('active');
+};
+
+document.getElementById('closeServiceModal')?.addEventListener('click', closeServiceModal);
+document.getElementById('cancelServiceBtn')?.addEventListener('click', closeServiceModal);
+
+// Close service modal when clicking outside
+document.getElementById('serviceModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'serviceModal') {
+        closeServiceModal();
+    }
+});
+
+// Service form character counter
+document.getElementById('serviceShortDescription')?.addEventListener('input', (e) => {
+    const count = e.target.value.length;
+    const counter = document.getElementById('serviceShortDescCount');
+    if (counter) {
+        counter.textContent = `${count}/500 characters`;
+    }
+});
+
+// Service form image preview
+document.getElementById('serviceImage')?.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    const preview = document.getElementById('serviceImagePreview');
+    if (file && preview) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width: 200px; margin-top: 10px;">`;
+        };
+        reader.readAsDataURL(file);
+    } else if (preview) {
+        preview.innerHTML = '';
+    }
+});
+
+// Service form submit
+document.getElementById('serviceForm')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (!authToken) {
+        alert('Please log in again');
+        logout();
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('title', document.getElementById('serviceTitle').value);
+    formData.append('description', document.getElementById('serviceDescription').value);
+    formData.append('shortDescription', document.getElementById('serviceShortDescription').value);
+    
+    const slug = document.getElementById('serviceSlug').value.trim();
+    if (slug) {
+        formData.append('slug', slug);
+    }
+    
+    formData.append('features', document.getElementById('serviceFeatures').value);
+    formData.append('icon', document.getElementById('serviceIcon').value);
+    formData.append('order', document.getElementById('serviceOrder').value || '0');
+    formData.append('featured', document.getElementById('serviceFeatured').checked);
+    formData.append('published', document.getElementById('servicePublished').checked);
+    
+    const imageFile = document.getElementById('serviceImage').files[0];
+    if (imageFile) {
+        formData.append('image', imageFile);
+    }
+
+    try {
+        const url = currentServiceId 
+            ? `${API_BASE}/services/${currentServiceId}`
+            : `${API_BASE}/services`;
+        
+        const response = await fetch(url, {
+            method: currentServiceId ? 'PUT' : 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            },
+            body: formData
+        });
+
+        if (response.ok) {
+            document.getElementById('serviceModal').classList.remove('active');
+            loadServices();
+        } else {
+            const data = await response.json();
+            const errorMsg = data.message || data.error || (data.errors ? data.errors.map(e => e.msg || e.message).join(', ') : 'Failed to save service');
+            alert('Error: ' + errorMsg);
+        }
+    } catch (error) {
+        console.error('Service form error:', error);
+        alert('Network error. Please try again.');
+    }
+});
+
+// Edit service
+function editService(id) {
+    currentServiceId = id;
+    fetch(`${API_BASE}/services/${id}`)
+        .then(res => {
+            if (!res.ok) {
+                throw new Error('Failed to load service');
+            }
+            return res.json();
+        })
+        .then(service => {
+            document.getElementById('serviceModalTitle').textContent = 'Edit Service';
+            document.getElementById('serviceId').value = service.id;
+            document.getElementById('serviceTitle').value = service.title || '';
+            document.getElementById('serviceDescription').value = service.description || '';
+            document.getElementById('serviceShortDescription').value = service.shortDescription || '';
+            document.getElementById('serviceSlug').value = service.slug || '';
+            
+            // Handle features - can be array or string
+            let featuresText = '';
+            if (Array.isArray(service.features)) {
+                featuresText = service.features.join('\n');
+            } else if (service.features) {
+                featuresText = service.features;
+            }
+            document.getElementById('serviceFeatures').value = featuresText;
+            
+            document.getElementById('serviceIcon').value = service.icon || '';
+            document.getElementById('serviceOrder').value = service.order || 0;
+            document.getElementById('serviceFeatured').checked = service.featured || false;
+            document.getElementById('servicePublished').checked = service.published || false;
+            
+            const shortDescCount = (service.shortDescription || '').length;
+            document.getElementById('serviceShortDescCount').textContent = `${shortDescCount}/500 characters`;
+            
+            const preview = document.getElementById('serviceImagePreview');
+            if (service.image && preview) {
+                preview.innerHTML = `<img src="${service.image}" alt="Current image" style="max-width: 200px; margin-top: 10px;">`;
+            } else if (preview) {
+                preview.innerHTML = '';
+            }
+            
+            document.getElementById('serviceModal').classList.add('active');
+        })
+        .catch(error => {
+            console.error('Error loading service:', error);
+            alert('Error loading service: ' + error.message);
+        });
+}
+
+// Delete service
+function deleteService(id) {
+    if (!confirm('Are you sure you want to delete this service?')) return;
+
+    if (!authToken) {
+        alert('Please log in again');
+        logout();
+        return;
+    }
+
+    fetch(`${API_BASE}/services/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${authToken}`
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            loadServices();
+        } else {
+            return res.json().then(data => {
+                throw new Error(data.message || 'Error deleting service');
+            });
+        }
+    })
+    .catch(error => {
+        console.error('Delete service error:', error);
+        alert('Error: ' + error.message);
+    });
+}
+
 // Load stats
 async function loadStats() {
     try {
@@ -1324,10 +1681,10 @@ function displayComments(comments) {
             <div class="comment-content-admin">${comment.content}</div>
             <div class="comment-actions">
                 ${!comment.approved ? 
-                    `<button class="btn btn-sm btn-success" onclick="approveComment(${comment.id})">Approve</button>` : 
-                    `<button class="btn btn-sm btn-warning" onclick="rejectComment(${comment.id})">Reject</button>`
+                    `<button class="btn btn-sm btn-success" data-action="approve-comment" data-id="${comment.id}">Approve</button>` : 
+                    `<button class="btn btn-sm btn-warning" data-action="reject-comment" data-id="${comment.id}">Reject</button>`
                 }
-                <button class="btn btn-sm btn-danger" onclick="deleteComment(${comment.id})">Delete</button>
+                <button class="btn btn-sm btn-danger" data-action="delete-comment" data-id="${comment.id}">Delete</button>
             </div>
         `;
         commentsList.appendChild(commentDiv);
@@ -1478,7 +1835,7 @@ async function loadUsers() {
 // Display users
 function displayUsers(users) {
     const currentUserRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
-    const isSuperAdmin = currentUserRole === 'super_admin';
+    const isAdmin = currentUserRole === 'admin';
     const usersList = document.getElementById('usersList');
     usersList.innerHTML = '';
     
@@ -1499,13 +1856,13 @@ function displayUsers(users) {
                 <div class="user-role ${user.role}">${user.role.toUpperCase()}</div>
             </div>
             <div class="user-actions">
-                ${isSuperAdmin ? `<button class="btn btn-sm btn-secondary" onclick="window.editUser(${user.id})">Edit</button>` : ''}
-                ${isSuperAdmin && user.id !== parseInt((localStorage.getItem('userId') || sessionStorage.getItem('userId')) || '0') ? 
-                    `<button class="btn btn-sm btn-warning" onclick="resetUserPassword(${user.id}, '${user.username}')">Reset Password</button>` : 
+                ${isAdmin ? `<button class="btn btn-sm btn-secondary" data-action="edit-user" data-id="${user.id}">Edit</button>` : ''}
+                ${isAdmin && user.id !== parseInt((localStorage.getItem('userId') || sessionStorage.getItem('userId')) || '0') ? 
+                    `<button class="btn btn-sm btn-warning" data-action="reset-password" data-id="${user.id}" data-username="${user.username}">Reset Password</button>` : 
                     ''
                 }
-                ${isSuperAdmin && user.id !== parseInt((localStorage.getItem('userId') || sessionStorage.getItem('userId')) || '0') ? 
-                    `<button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})">Delete</button>` : 
+                ${isAdmin && user.id !== parseInt((localStorage.getItem('userId') || sessionStorage.getItem('userId')) || '0') ? 
+                    `<button class="btn btn-sm btn-danger" data-action="delete-user" data-id="${user.id}">Delete</button>` : 
                     user.id === parseInt((localStorage.getItem('userId') || sessionStorage.getItem('userId')) || '0') ? '<span class="text-muted">Cannot delete yourself</span>' : ''
                 }
             </div>
@@ -1514,17 +1871,17 @@ function displayUsers(users) {
     });
 }
 
-// Add user button (only for super admin)
+// Add user button (admin only)
 document.getElementById('addUserBtn')?.addEventListener('click', () => {
     const currentUserRole = localStorage.getItem('userRole') || sessionStorage.getItem('userRole');
-    if (currentUserRole === 'super_admin') {
+    if (currentUserRole === 'admin') {
         showUserModal();
     } else {
-        alert('Only super admin can create users.');
+        alert('Only admin can create users.');
     }
 });
 
-// Reset user password (super admin only)
+// Reset user password (admin only)
 async function resetUserPassword(userId, username) {
     const newPassword = prompt(`Enter new password for ${username}:`);
     if (!newPassword) return;
@@ -1937,7 +2294,80 @@ async function deleteUser(id) {
     }
 }
 
-// Make functions global
+// Event delegation for dynamically created buttons
+document.addEventListener('click', (e) => {
+    const action = e.target.getAttribute('data-action');
+    const id = e.target.getAttribute('data-id');
+    const username = e.target.getAttribute('data-username');
+    
+    if (!action || !id) return;
+    
+    switch(action) {
+        case 'edit-news':
+            editNews(parseInt(id));
+            break;
+        case 'delete-news':
+            deleteNews(parseInt(id));
+            break;
+        case 'edit-event':
+            editEvent(parseInt(id));
+            break;
+        case 'delete-event':
+            deleteEvent(parseInt(id));
+            break;
+        case 'edit-job':
+            editJob(parseInt(id));
+            break;
+        case 'delete-job':
+            deleteJob(parseInt(id));
+            break;
+        case 'edit-talent':
+            editTalent(parseInt(id));
+            break;
+        case 'delete-talent':
+            deleteTalent(parseInt(id));
+            break;
+        case 'edit-sales-rental':
+            editSalesRental(parseInt(id));
+            break;
+        case 'delete-sales-rental':
+            deleteSalesRental(parseInt(id));
+            break;
+        case 'edit-service':
+            editService(parseInt(id));
+            break;
+        case 'delete-service':
+            deleteService(parseInt(id));
+            break;
+        case 'approve-comment':
+            approveComment(parseInt(id));
+            break;
+        case 'reject-comment':
+            rejectComment(parseInt(id));
+            break;
+        case 'delete-comment':
+            deleteComment(parseInt(id));
+            break;
+        case 'edit-user':
+            editUser(parseInt(id));
+            break;
+        case 'delete-user':
+            deleteUser(parseInt(id));
+            break;
+        case 'reset-password':
+            resetUserPassword(parseInt(id), username);
+            break;
+    }
+});
+
+// Handle image error fallback
+document.addEventListener('error', (e) => {
+    if (e.target.tagName === 'IMG' && e.target.hasAttribute('data-fallback')) {
+        e.target.src = e.target.getAttribute('data-fallback');
+    }
+}, true);
+
+// Make functions global (for backward compatibility if needed)
 window.resetUserPassword = resetUserPassword;
 window.editNews = editNews;
 window.deleteNews = deleteNews;

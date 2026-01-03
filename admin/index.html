@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Admin Panel - Sportsman Talent Agency</title>
     <link rel="stylesheet" href="admin.css">
 </head>
@@ -45,6 +45,7 @@
                 <a href="#" class="nav-item" data-page="jobs">Job Openings</a>
                 <a href="#" class="nav-item" data-page="talents">Talent Roster</a>
                 <a href="#" class="nav-item" data-page="sales-rentals">Sales/Rentals</a>
+                <a href="#" class="nav-item" data-page="services">Services</a>
                 <a href="#" class="nav-item" data-page="comments">Comments</a>
                 <a href="#" class="nav-item" data-page="stats">Statistics</a>
                 <a href="#" class="nav-item super-admin-only" data-page="users" style="display: none;">User Management</a>
@@ -59,6 +60,7 @@
                 <button class="btn btn-primary" id="addJobBtn" style="display: none;">+ Add New Job</button>
                 <button class="btn btn-primary" id="addTalentBtn" style="display: none;">+ Add New Talent</button>
                 <button class="btn btn-primary" id="addSalesRentalBtn" style="display: none;">+ Add New Item</button>
+                <button class="btn btn-primary" id="addServiceBtn" style="display: none;">+ Add New Service</button>
             </header>
 
             <div id="newsPage" class="content-page active">
@@ -95,6 +97,14 @@
                 <div class="sales-rentals-section">
                     <div class="sales-rentals-list" id="salesRentalsList">
                         <!-- Sales/Rentals will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="servicesPage" class="content-page">
+                <div class="services-section">
+                    <div class="services-list" id="servicesList">
+                        <!-- Services will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -248,7 +258,6 @@
                     <select id="userRole" required>
                         <option value="editor">Editor</option>
                         <option value="admin">Admin</option>
-                        <option value="super_admin">Super Admin</option>
                     </select>
                 </div>
                 <div class="modal-actions">
@@ -624,6 +633,74 @@
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" id="cancelSalesRentalBtn">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Item</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Service Modal -->
+    <div id="serviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="serviceModalTitle">Add New Service</h2>
+                <span class="close" id="closeServiceModal">&times;</span>
+            </div>
+            <form id="serviceForm">
+                <input type="hidden" id="serviceId">
+                <div class="form-group">
+                    <label for="serviceTitle">Title *</label>
+                    <input type="text" id="serviceTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="serviceShortDescription">Short Description *</label>
+                    <textarea id="serviceShortDescription" rows="3" required maxlength="500"></textarea>
+                    <small id="serviceShortDescCount">0/500 characters</small>
+                </div>
+                <div class="form-group">
+                    <label for="serviceDescription">Full Description *</label>
+                    <textarea id="serviceDescription" rows="8" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="serviceSlug">Slug (URL-friendly name)</label>
+                    <input type="text" id="serviceSlug" placeholder="auto-generated from title">
+                    <small>Leave blank to auto-generate from title</small>
+                </div>
+                <div class="form-group">
+                    <label for="serviceFeatures">Features (one per line)</label>
+                    <textarea id="serviceFeatures" rows="6" placeholder="Enter features, one per line"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="serviceIcon">Icon (optional)</label>
+                        <input type="text" id="serviceIcon" placeholder="e.g., icon-name">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceOrder">Display Order</label>
+                        <input type="number" id="serviceOrder" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="serviceImage">Image</label>
+                    <input type="file" id="serviceImage" accept="image/*">
+                    <div id="serviceImagePreview" class="image-preview"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="serviceFeatured">
+                            Featured Service
+                        </label>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="servicePublished">
+                            Publish Immediately
+                        </label>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelServiceBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Service</button>
                 </div>
             </form>
         </div>

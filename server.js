@@ -55,6 +55,15 @@ const adminApiLimiter = rateLimit({
     legacyHeaders: false
 });
 
+// Rate limiter for token verification (more lenient since it's called periodically)
+const verifyLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // Allow 50 verify requests per 15 minutes (should be enough for periodic checks)
+    message: 'Too many verification requests, please try again later.',
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 // Apply rate limiting BEFORE routes
 // Note: Order matters - rate limiters must be applied before routes are registered
 // We'll apply them after routes are registered but before they're used
@@ -119,7 +128,7 @@ app.get('/', (req, res) => {
 });
 
 // Initialize models
-let User, News, Like, Comment, Event, Job, Talent, SalesRental;
+let User, News, Like, Comment, Event, Job, Talent, SalesRental, Service;
 
 try {
     User = require('./models/User')(sequelize);
@@ -130,6 +139,7 @@ try {
     Job = require('./models/Job')(sequelize);
     Talent = require('./models/Talent')(sequelize);
     SalesRental = require('./models/SalesRental')(sequelize);
+    Service = require('./models/Service')(sequelize);
     console.log('✓ Models loaded successfully');
 } catch (error) {
     console.error('✗ Error loading models:', error);
@@ -149,13 +159,14 @@ try {
 }
 
 // Make models available to routes
-app.locals.models = { User, News, Like, Comment, Event, Job, Talent, SalesRental };
+app.locals.models = { User, News, Like, Comment, Event, Job, Talent, SalesRental, Service };
 
 // Apply rate limiting to specific routes BEFORE registering them
 // Note: Express applies middleware in order, so more specific routes must come first
 // Auth routes (very strict)
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
+app.use('/api/auth/verify', verifyLimiter); // More lenient for verify endpoint
 // Admin routes (more lenient - will be further restricted by auth middleware)
 app.use('/api/users', adminApiLimiter);
 app.use('/api/news', adminApiLimiter);
@@ -164,6 +175,7 @@ app.use('/api/jobs', adminApiLimiter);
 app.use('/api/talents', adminApiLimiter);
 app.use('/api/sales-rentals', adminApiLimiter);
 app.use('/api/comments', adminApiLimiter);
+app.use('/api/services', adminApiLimiter);
 // Public API routes (stricter - applied last to catch remaining routes)
 app.use('/api/', apiLimiter);
 
@@ -179,6 +191,7 @@ try {
     app.use('/api/jobs', require('./routes/jobs'));
     app.use('/api/talents', require('./routes/talents'));
     app.use('/api/sales-rentals', require('./routes/salesRentals'));
+    app.use('/api/services', require('./routes/services'));
     app.use('/api/contact', require('./routes/contact'));
     console.log('✓ Routes registered successfully');
 } catch (error) {
@@ -200,15 +213,15 @@ sequelize.authenticate()
     .then(async () => {
         console.log('✓ Database synced - All tables ready');
         
-        // Auto-create default super admin if none exists
+        // Auto-create default admin if none exists
         try {
-            const existingSuperAdmin = await User.findOne({
-                where: { role: 'super_admin' }
+            const existingAdmin = await User.findOne({
+                where: { role: 'admin' }
             });
             
-            if (!existingSuperAdmin) {
+            if (!existingAdmin) {
                 const defaultEmail = 'admin@sportsmantalent.com';
-                const defaultUsername = 'superadmin';
+                const defaultUsername = 'admin';
                 const defaultPassword = 'Admin@2026';
                 
                 // Check if username or email is already taken
@@ -222,30 +235,29 @@ sequelize.authenticate()
                 });
                 
                 if (!existingUser) {
-                    const superAdmin = await User.create({
+                    const admin = await User.create({
                         username: defaultUsername,
                         email: defaultEmail,
                         password: defaultPassword, // Will be hashed by beforeCreate hook
-                        role: 'super_admin',
+                        role: 'admin',
                         lastActivity: new Date()
                     });
                     
                     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-                    console.log('✓ Default Super Admin Created');
-                    console.log('   Username: superadmin');
+                    console.log('✓ Default Admin Created');
+                    console.log('   Username: admin');
                     console.log('   Email: admin@sportsmantalent.com');
                     console.log('   Password: Admin@2026');
                     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
                     console.log('⚠️  IMPORTANT: Change this password after first login!');
                 } else {
-                    console.log('⚠️  Super Admin already exists or username/email is taken');
+                    console.log('⚠️  Admin already exists or username/email is taken');
                 }
             } else {
-                console.log('✓ Super Admin account exists');
+                console.log('✓ Admin account exists');
             }
         } catch (error) {
-            console.error('⚠️  Could not create default super admin:', error.message);
-            console.log('   You can create one manually using: node create-default-super-admin.js');
+            console.error('⚠️  Could not create default admin:', error.message);
         }
     })
     .catch(err => {

@@ -51,18 +51,21 @@ const auth = async (req, res, next) => {
 };
 
 const adminOnly = (req, res, next) => {
-    if (req.user.role !== 'admin' && req.user.role !== 'super_admin') {
-        return res.status(403).json({ message: 'Admin access required' });
+    if (!req.user) {
+        return res.status(401).json({ message: 'Authentication required' });
+    }
+    
+    // Only 'admin' role is allowed (super_admin has been removed)
+    if (req.user.role !== 'admin') {
+        console.log(`[AUTH] Admin access denied for user ${req.user.id} (${req.user.username}). Role: ${req.user.role}`);
+        return res.status(403).json({ 
+            message: 'Admin access required. Your role: ' + req.user.role,
+            userRole: req.user.role,
+            userId: req.user.id
+        });
     }
     next();
 };
 
-const superAdminOnly = (req, res, next) => {
-    if (req.user.role !== 'super_admin') {
-        return res.status(403).json({ message: 'Super admin access required' });
-    }
-    next();
-};
-
-module.exports = { auth, adminOnly, superAdminOnly };
+module.exports = { auth, adminOnly };
 

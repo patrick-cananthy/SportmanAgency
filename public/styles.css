@@ -278,6 +278,7 @@ body {
     height: 100%;
     opacity: 0;
     transition: opacity 1s ease-in-out;
+    overflow: hidden;
 }
 
 .hero-slide.active {
@@ -286,9 +287,19 @@ body {
 }
 
 .hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    z-index: 0;
+    background-color: #000;
+}
+
+/* Ensure video is visible and playing */
+.hero-slide.active .hero-video {
+    display: block;
 }
 
 .hero-overlay {
@@ -2441,6 +2452,65 @@ body {
         height: 250px;
     }
 
+    .service-content {
+        padding: 30px 25px;
+    }
+
+    .service-content h3 {
+        font-size: 1.75rem;
+    }
+
+    .service-content p {
+        font-size: 1rem;
+    }
+
+    .talent-info {
+        padding: 25px;
+    }
+
+    .talent-info h3 {
+        font-size: 1.25rem;
+    }
+
+    .event-card,
+    .job-card,
+    .sales-rental-card {
+        padding: 25px;
+    }
+
+    .event-card h3,
+    .job-card h3,
+    .sales-rental-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .news-card {
+        padding: 25px;
+    }
+
+    .news-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .contact-content {
+        gap: 30px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 12px;
+        font-size: 1rem;
+    }
+
+    .footer-section {
+        margin-bottom: 30px;
+    }
+
     .talent-filters,
     .work-filters {
         gap: 10px;
@@ -2581,13 +2651,379 @@ body {
         font-size: 2rem;
     }
 
+    .section-subtitle {
+        font-size: 1rem;
+    }
+
     .contact-form {
         padding: 30px 20px;
+    }
+
+    .contact-form h3 {
+        font-size: 1.5rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 14px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    .news-content {
+        padding: 25px;
+    }
+
+    .event-content,
+    .job-content,
+    .sales-rental-content {
+        padding: 20px;
+    }
+
+    .event-content h3,
+    .job-content h3,
+    .sales-rental-content h3 {
+        font-size: 1.15rem;
+    }
+
+    .event-card.featured {
+        grid-column: span 1;
+    }
+
+    .event-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .news-content {
+        padding: 25px 20px;
+    }
+
+    .news-card h3 {
+        font-size: 1.15rem;
+    }
+
+    .about-image {
+        margin-bottom: 30px;
+    }
+
+    .leadership-grid {
+        gap: 25px;
+    }
+
+    .leader-image {
+        width: 150px;
+        height: 150px;
+    }
+
+    .value-card h3 {
+        font-size: 1.25rem;
+    }
+
+    .value-card p {
+        font-size: 0.95rem;
     }
 
     .footer-content {
         grid-template-columns: 1fr;
     }
+
+    .service-card {
+        gap: 20px;
+    }
+
+    .service-content h3 {
+        font-size: 1.5rem;
+    }
+
+    .service-content p {
+        font-size: 0.95rem;
+    }
+
+    .service-content ul {
+        font-size: 0.9rem;
+    }
+
+    .talent-profile {
+        padding: 20px;
+    }
+
+    .talent-profile h3 {
+        font-size: 1.25rem;
+    }
+
+    .event-card,
+    .job-card,
+    .sales-rental-card {
+        padding: 20px;
+    }
+
+    .news-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .news-card {
+        padding: 20px;
+    }
+
+    .about-text h3 {
+        font-size: 1.5rem;
+    }
+
+    .about-text p {
+        font-size: 1rem;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .value-card {
+        padding: 25px;
+    }
+
+    .leadership-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .about-stats {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .partners-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-card {
+        height: 250px;
+    }
+
+    .contact-tabs {
+        flex-wrap: wrap;
+    }
+
+    .contact-tab {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+}
+
+/* Additional responsive improvements for tablets and small devices */
+@media (max-width: 968px) {
+    .services-grid {
+        gap: 40px;
+    }
+
+    .service-card {
+        gap: 30px;
+    }
+
+    .events-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 25px;
+    }
+
+    .sales-rentals-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .news-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .jobs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .talent-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 25px;
+    }
+}
+
+/* Extra small devices (phones in portrait) */
+@media (max-width: 360px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .nav-container {
+        padding: 0 15px;
+    }
+
+    .section {
+        padding: 40px 0;
+    }
+
+    .section-title {
+        font-size: 1.75rem;
+    }
+
+    .section-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .hero-title {
+        font-size: 1.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .cta-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .service-content h3 {
+        font-size: 1.25rem;
+    }
+
+    .service-content p {
+        font-size: 0.9rem;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+
+    .contact-form {
+        padding: 20px 15px;
+    }
+
+    .contact-tab {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape orientation for mobile devices */
+@media (max-width: 768px) and (orientation: landscape) {
+    .hero-content {
+        margin-top: 5vh;
+        padding-top: 10vh;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .section {
+        padding: 50px 0;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    .cta-button,
+    .filter-btn,
+    .contact-tab,
+    .service-cta,
+    .news-link,
+    .talent-profile a {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 12px 24px;
+    }
+
+    .nav-menu a {
+        min-height: 44px;
+        padding: 15px 20px;
+    }
+
+    .mobile-toggle {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .service-image img,
+    .talent-profile img,
+    .event-image img,
+    .news-image img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Additional responsive improvements for tablets */
+@media (max-width: 968px) {
+    .about-content {
+        gap: 40px;
+    }
+
+    .leadership-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+}
+
+/* Extra small devices - additional improvements */
+@media (max-width: 360px) {
+    .talent-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Touch-friendly improvements for mobile devices */
+@media (hover: none) and (pointer: coarse) {
+    button,
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+        -webkit-tap-highlight-color: rgba(0, 102, 255, 0.2);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="url"],
+    textarea,
+    select {
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px;
+    }
+}
+
+/* Ensure images and videos are responsive */
+img, video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Prevent horizontal scroll */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
 }
 
 /* Smooth Scroll Animation */

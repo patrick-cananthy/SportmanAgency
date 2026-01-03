@@ -1,12 +1,12 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const { auth, adminOnly, superAdminOnly } = require('../middleware/auth');
+const { auth, adminOnly } = require('../middleware/auth');
 const router = express.Router();
 
 // Get User model from app locals
 const getUserModel = (req) => req.app.locals.models.User;
 
-// Get all users (admin and super admin only)
+// Get all users (admin only)
 router.get('/', auth, adminOnly, async (req, res) => {
     try {
         const User = getUserModel(req);
@@ -39,12 +39,12 @@ router.get('/:id', auth, adminOnly, async (req, res) => {
     }
 });
 
-// Create user (super admin only)
-router.post('/', auth, superAdminOnly, [
+// Create user (admin only)
+router.post('/', auth, adminOnly, [
     body('username').trim().notEmpty().withMessage('Username is required').isLength({ min: 3, max: 50 }),
     body('email').trim().isEmail().withMessage('Valid email is required'),
     body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('role').optional().isIn(['super_admin', 'admin', 'editor']).withMessage('Role must be super_admin, admin, or editor')
+    body('role').optional().isIn(['admin', 'editor']).withMessage('Role must be admin or editor')
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -87,12 +87,12 @@ router.post('/', auth, superAdminOnly, [
     }
 });
 
-// Update user (admin and super admin only)
+// Update user (admin only)
 router.put('/:id', auth, adminOnly, [
     body('username').optional().trim().isLength({ min: 3, max: 50 }),
     body('email').optional().trim().isEmail(),
     body('password').optional().isLength({ min: 6 }),
-    body('role').optional().isIn(['super_admin', 'admin', 'editor'])
+    body('role').optional().isIn(['admin', 'editor'])
 ], async (req, res) => {
     try {
         const errors = validationResult(req);
@@ -126,21 +126,11 @@ router.put('/:id', auth, adminOnly, [
             }
         }
         
-        // Only super admin can change roles
-        if (role && req.user.role !== 'super_admin') {
-            return res.status(403).json({ message: 'Only super admin can change user roles' });
-        }
-        
-        // Prevent non-super-admin from creating super admins
-        if (role === 'super_admin' && req.user.role !== 'super_admin') {
-            return res.status(403).json({ message: 'Only super admin can assign super admin role' });
-        }
-        
         // Update fields
         if (username) user.username = username.trim();
         if (email) user.email = email.trim();
         if (password) user.password = password; // Will be hashed by model hook
-        if (role && req.user.role === 'super_admin') user.role = role;
+        if (role) user.role = role;
         
         await user.save();
         
@@ -155,7 +145,7 @@ router.put('/:id', auth, adminOnly, [
     }
 });
 
-// Delete user (admin and super admin only)
+// Delete user (admin only)
 router.delete('/:id', auth, adminOnly, async (req, res) => {
     try {
         const { id } = req.params;
@@ -171,11 +161,6 @@ router.delete('/:id', auth, adminOnly, async (req, res) => {
             return res.status(404).json({ message: 'User not found' });
         }
         
-        // Only super admin can delete super admins
-        if (user.role === 'super_admin' && req.user.role !== 'super_admin') {
-            return res.status(403).json({ message: 'Only super admin can delete super admin accounts' });
-        }
-        
         await user.destroy();
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
@@ -183,8 +168,8 @@ router.delete('/:id', auth, adminOnly, async (req, res) => {
     }
 });
 
-// Reset user password (super admin only)
-router.post('/:id/reset-password', auth, superAdminOnly, [
+// Reset user password (admin only)
+router.post('/:id/reset-password', auth, adminOnly, [
     body('newPassword').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
 ], async (req, res) => {
     try {

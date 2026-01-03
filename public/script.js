@@ -291,15 +291,20 @@ window.initHeroCarousel = function() {
                 });
                 // Play current video
                 video.currentTime = 0;
-                video.load();
+                video.muted = true; // Ensure muted
+                
+                // Try to play the video
                 const playPromise = video.play();
                 if (playPromise !== undefined) {
                     playPromise
                         .then(() => {
-                            console.log('Video playing');
+                            // Video playing successfully
                         })
                         .catch(error => {
-                            console.log('Video autoplay prevented:', error);
+                            // Silently handle autoplay prevention
+                            if (error.name !== 'AbortError') {
+                                console.log('Video autoplay prevented:', error.name);
+                            }
                         });
                 }
             }
@@ -314,47 +319,48 @@ window.initHeroCarousel = function() {
         showSlide(currentSlide);
     }
 
-    // Ensure all videos are set up correctly
+    // Ensure all videos are set up correctly and play the first one
     heroSlides.forEach((slide, index) => {
         const video = slide.querySelector('.hero-video');
         if (video) {
-            video.setAttribute('playsinline', '');
-            video.setAttribute('muted', '');
-            video.setAttribute('loop', '');
-            video.setAttribute('autoplay', '');
+            // Set all required attributes
             video.muted = true;
             video.loop = true;
             video.playsInline = true;
+            video.setAttribute('muted', '');
+            video.setAttribute('loop', '');
+            video.setAttribute('playsinline', '');
             
-            // Load video
-            video.load();
-            
-            // Only play the first video initially
-            if (index === 0) {
-                // Try to play after video is loaded
-                const tryPlay = () => {
-                    const playPromise = video.play();
-                    if (playPromise !== undefined) {
-                        playPromise
-                            .then(() => {
-                                console.log('Video playing successfully');
-                            })
-                            .catch(error => {
-                                console.log('Video autoplay prevented:', error);
-                                // Try again after user interaction
-                                document.addEventListener('click', () => {
-                                    video.play().catch(e => console.log('Still cannot play:', e));
-                                }, { once: true });
-                            });
-                    }
+            // For the active (first) slide, try to play immediately
+            if (index === 0 && slide.classList.contains('active')) {
+                // Try to play immediately
+                const attemptPlay = () => {
+                    video.play().then(() => {
+                        console.log('Hero video playing');
+                    }).catch(error => {
+                        console.log('Video autoplay prevented, will retry on interaction:', error.name);
+                        // Retry on any user interaction
+                        const playOnInteraction = () => {
+                            video.play().catch(() => {});
+                            document.removeEventListener('click', playOnInteraction);
+                            document.removeEventListener('touchstart', playOnInteraction);
+                            document.removeEventListener('scroll', playOnInteraction);
+                        };
+                        document.addEventListener('click', playOnInteraction, { once: true });
+                        document.addEventListener('touchstart', playOnInteraction, { once: true });
+                        document.addEventListener('scroll', playOnInteraction, { once: true });
+                    });
                 };
                 
+                // Try to play when video can play
                 if (video.readyState >= 2) {
-                    tryPlay();
+                    attemptPlay();
                 } else {
-                    video.addEventListener('loadeddata', tryPlay, { once: true });
+                    video.addEventListener('canplay', attemptPlay, { once: true });
+                    video.addEventListener('loadeddata', attemptPlay, { once: true });
                 }
             } else {
+                // Pause other videos
                 video.pause();
             }
         }
@@ -370,6 +376,19 @@ window.initHeroCarousel = function() {
     carouselInterval = setInterval(nextSlide, slideInterval);
     
     console.log('Hero carousel initialized with', heroSlides.length, 'slides');
+    
+    // Force play the first video after a short delay
+    setTimeout(() => {
+        const firstSlide = heroSlides[0];
+        if (firstSlide) {
+            const firstVideo = firstSlide.querySelector('.hero-video');
+            if (firstVideo && firstVideo.paused) {
+                firstVideo.play().catch(err => {
+                    console.log('Initial video play failed, will retry on interaction:', err.name);
+                });
+            }
+        }
+    }, 500);
     
     // Pause on hover
     const hero = document.querySelector('.hero');
@@ -402,12 +421,16 @@ window.initHeroCarousel = function() {
 // Initialize carousel when DOM is ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        initHeroCarousel();
+        if (window.initHeroCarousel) {
+            window.initHeroCarousel();
+        }
     });
 } else {
     // DOM already loaded
     setTimeout(() => {
-        initHeroCarousel();
+        if (window.initHeroCarousel) {
+            window.initHeroCarousel();
+        }
     }, 100);
 }
 
@@ -471,6 +494,34 @@ window.addEventListener('load', () => {
         initHeroCarousel();
     }
     
+    // Force play hero video after page fully loads
+    setTimeout(() => {
+        const activeSlide = document.querySelector('.hero-slide.active');
+        if (activeSlide) {
+            const video = activeSlide.querySelector('.hero-video');
+            if (video) {
+                video.muted = true;
+                if (video.paused) {
+                    video.play().then(() => {
+                        console.log('Hero video started playing');
+                    }).catch(err => {
+                        console.log('Video play failed, will retry on interaction:', err.name);
+                        // Retry on any user interaction
+                        const retryPlay = () => {
+                            video.play().catch(() => {});
+                            document.removeEventListener('click', retryPlay);
+                            document.removeEventListener('touchstart', retryPlay);
+                            document.removeEventListener('scroll', retryPlay);
+                        };
+                        document.addEventListener('click', retryPlay, { once: true });
+                        document.addEventListener('touchstart', retryPlay, { once: true });
+                        document.addEventListener('scroll', retryPlay, { once: true });
+                    });
+                }
+            }
+        }
+    }, 800);
+    
     // Initialize talent filter - show all by default
     const talentProfiles = document.querySelectorAll('.talent-profile');
     if (talentProfiles.length > 0) {
@@ -508,6 +559,20 @@ if ('IntersectionObserver' in window) {
     });
 }
 
+// Initialize hero carousel when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        if (window.initHeroCarousel) {
+            window.initHeroCarousel();
+        }
+    });
+} else {
+    // DOM already loaded
+    if (window.initHeroCarousel) {
+        window.initHeroCarousel();
+    }
+}
+
 // Add loading animation
 document.addEventListener('DOMContentLoaded', () => {
     // Remove any loading overlay if present
@@ -518,6 +583,16 @@ document.addEventListener('DOMContentLoaded', () => {
             loader.style.display = 'none';
         }, 300);
     }
+    
+    // Ensure hero video plays after page load
+    setTimeout(() => {
+        const firstVideo = document.querySelector('.hero-slide.active .hero-video');
+        if (firstVideo && firstVideo.paused) {
+            firstVideo.play().catch(err => {
+                console.log('Video autoplay blocked, will play on interaction');
+            });
+        }
+    }, 1000);
 });
 
 // Image error handling - fallback to placeholder

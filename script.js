@@ -265,15 +265,39 @@ window.initHeroCarousel = function() {
         const video = slide.querySelector('.hero-video');
         if (video) {
             video.setAttribute('playsinline', '');
+            video.setAttribute('webkit-playsinline', '');
             video.setAttribute('muted', '');
             video.setAttribute('loop', '');
             video.muted = true;
             video.loop = true;
+            video.playsInline = true;
+            
+            // Handle video load errors
+            video.addEventListener('error', (e) => {
+                console.error('Video load error for slide', index, e);
+                // Optionally show a fallback image
+            });
+            
+            // Handle video loaded event
+            video.addEventListener('loadeddata', () => {
+                console.log('Video loaded for slide', index);
+            });
+            
+            // Load the video
+            video.load();
+            
             // Only play the first video initially
             if (index === 0) {
-                video.play().catch(error => {
-                    console.log('Video autoplay prevented for slide', index, error);
-                });
+                // Try to play with a small delay to ensure video is ready
+                setTimeout(() => {
+                    video.play().catch(error => {
+                        console.log('Video autoplay prevented for slide', index, error);
+                        // Try again after user interaction
+                        document.addEventListener('click', () => {
+                            video.play().catch(e => console.log('Video play failed:', e));
+                        }, { once: true });
+                    });
+                }, 100);
             } else {
                 video.pause();
             }
