@@ -146,6 +146,32 @@
             line-height: 1.8;
         }
         
+        .talent-social-media {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .talent-social-media .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        
+        .talent-social-media .social-link:hover {
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
         .back-link {
             display: inline-flex;
             align-items: center;
@@ -347,6 +373,51 @@
                 }).join('');
             }
             
+            // Parse social media links
+            let socialMediaHtml = '';
+            if (talent.socialMedia) {
+                let socialLinks = [];
+                try {
+                    // Try to parse as JSON first
+                    if (talent.socialMedia.startsWith('{') || talent.socialMedia.startsWith('[')) {
+                        socialLinks = JSON.parse(talent.socialMedia);
+                    } else {
+                        // Parse as newline-separated or comma-separated
+                        const lines = talent.socialMedia.split(/[\n,]/).filter(l => l.trim());
+                        socialLinks = lines.map(line => {
+                            const trimmed = line.trim();
+                            // Try to detect platform and URL
+                            if (trimmed.includes('instagram.com') || trimmed.includes('instagram')) {
+                                return { platform: 'Instagram', url: trimmed.includes('http') ? trimmed : `https://instagram.com/${trimmed.replace('@', '')}` };
+                            } else if (trimmed.includes('twitter.com') || trimmed.includes('twitter') || trimmed.includes('x.com')) {
+                                return { platform: 'Twitter', url: trimmed.includes('http') ? trimmed : `https://twitter.com/${trimmed.replace('@', '')}` };
+                            } else if (trimmed.includes('facebook.com') || trimmed.includes('facebook')) {
+                                return { platform: 'Facebook', url: trimmed.includes('http') ? trimmed : `https://facebook.com/${trimmed}` };
+                            } else if (trimmed.includes('linkedin.com') || trimmed.includes('linkedin')) {
+                                return { platform: 'LinkedIn', url: trimmed.includes('http') ? trimmed : `https://linkedin.com/in/${trimmed}` };
+                            } else if (trimmed.includes('http')) {
+                                return { platform: 'Website', url: trimmed };
+                            } else {
+                                return { platform: 'Social', url: trimmed };
+                            }
+                        });
+                    }
+                } catch (e) {
+                    // If parsing fails, treat as simple text
+                    const lines = talent.socialMedia.split(/[\n,]/).filter(l => l.trim());
+                    socialLinks = lines.map(line => ({ platform: 'Link', url: line.trim() }));
+                }
+                
+                if (Array.isArray(socialLinks) && socialLinks.length > 0) {
+                    socialMediaHtml = socialLinks.map(link => {
+                        const platform = (link.platform || 'Link').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const url = (link.url || link).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        const safeUrl = url.startsWith('http') ? url : `https://${url}`;
+                        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="social-link">${platform}</a>`;
+                    }).join('');
+                }
+            }
+            
             const talentContent = document.getElementById('talentContent');
             talentContent.innerHTML = `
                 <div class="talent-layout">
@@ -355,7 +426,7 @@
                     </div>
                     <div class="talent-info-section">
                         <h1 class="talent-name">${safeName}</h1>
-                        <span class="talent-sport-badge">${safeSport}</span>
+                        ${safeSport ? `<span class="talent-sport-badge">${safeSport}</span>` : ''}
                         
                         <div class="talent-meta">
                             ${safeNationality ? `
@@ -414,6 +485,15 @@
                             <div class="talent-section">
                                 <h3>Statistics</h3>
                                 <div class="talent-stats">${safeStats}</div>
+                            </div>
+                        ` : ''}
+                        
+                        ${socialMediaHtml ? `
+                            <div class="talent-section">
+                                <h3>Social Media</h3>
+                                <div class="talent-social-media">
+                                    ${socialMediaHtml}
+                                </div>
                             </div>
                         ` : ''}
                     </div>

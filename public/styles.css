@@ -2083,10 +2083,30 @@ body {
 }
 
 .footer-content {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
     margin-bottom: 40px;
+}
+
+.footer-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.footer-row-single {
+    grid-template-columns: 1fr;
+}
+
+.footer-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.footer-column .footer-section {
+    margin-bottom: 0;
 }
 
 .footer-section h4 {
@@ -2656,18 +2676,52 @@ body {
     }
 
     .contact-form {
-        padding: 30px 20px;
+        padding: 25px 15px;
     }
 
     .contact-form h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
     }
 
     .form-group input,
     .form-group textarea,
     .form-group select {
-        padding: 14px;
+        padding: 14px 12px;
         font-size: 16px; /* Prevents zoom on iOS */
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .form-group label {
+        font-size: 0.95rem;
+        margin-bottom: 8px;
+        display: block;
+    }
+    
+    .submit-button {
+        padding: 14px 24px;
+        font-size: 1rem;
+        width: 100%;
+        min-height: 44px; /* Touch-friendly */
+    }
+    
+    .contact-tabs {
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .contact-tab {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+        min-height: 44px; /* Touch-friendly */
+        flex: 1 1 auto;
+        min-width: 120px;
     }
 
     .news-content {
@@ -2726,7 +2780,38 @@ body {
     }
 
     .footer-content {
+        gap: 25px;
+    }
+    
+    .footer-row {
         grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .footer-column {
+        gap: 15px;
+    }
+    
+    .footer-section {
+        margin-bottom: 20px;
+    }
+    
+    .footer-section h4 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+    
+    .footer-section ul li {
+        margin-bottom: 8px;
+    }
+    
+    .social-links {
+        gap: 10px;
+    }
+    
+    .social-links a {
+        font-size: 0.9rem;
+        padding: 6px 0;
     }
 
     .service-card {
