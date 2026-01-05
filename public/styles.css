@@ -2257,6 +2257,15 @@ body {
     .mobile-toggle {
         display: flex;
     }
+    
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .value-card {
+        width: 100%;
+    }
 
     .nav-menu {
         position: fixed;
@@ -2783,6 +2792,7 @@ body {
 
     .value-card {
         padding: 25px;
+        width: 100%;
     }
 
     .leadership-grid {
@@ -2973,9 +2983,10 @@ body {
         gap: 30px;
     }
 
+    /* Keep values grid single column on mobile */
     .values-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 30px;
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
 }
 
