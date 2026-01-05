@@ -178,10 +178,16 @@ router.post('/', auth, adminOnly, upload.single('image'), [
 
         res.status(201).json(serviceData);
     } catch (error) {
+        console.error('[SERVICE POST] Error:', error);
+        console.error('[SERVICE POST] Stack:', error.stack);
         if (error.name === 'SequelizeUniqueConstraintError') {
             res.status(400).json({ message: 'A service with this slug already exists' });
         } else {
-            res.status(500).json({ message: 'Server error', error: error.message });
+            res.status(500).json({ 
+                message: 'Server error', 
+                error: error.message,
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            });
         }
     }
 });

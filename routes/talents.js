@@ -132,7 +132,13 @@ router.post('/', auth, adminOnly, upload.single('image'), [
 
         res.status(201).json(talent);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('[TALENT POST] Error:', error);
+        console.error('[TALENT POST] Stack:', error.stack);
+        res.status(500).json({ 
+            message: 'Server error', 
+            error: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 

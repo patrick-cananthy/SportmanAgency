@@ -92,6 +92,12 @@ router.post('/', auth, upload.single('image'), [
 
         const { title, content, excerpt, author, category, featured, published } = req.body;
         const News = getNewsModel(req);
+        
+        if (!News) {
+            console.error('[NEWS POST] News model is undefined!');
+            return res.status(500).json({ message: 'Server error: Model not initialized' });
+        }
+        
         const image = req.file ? `/uploads/news/${req.file.filename}` : '';
 
         const news = await News.create({
@@ -107,7 +113,13 @@ router.post('/', auth, upload.single('image'), [
 
         res.status(201).json(news);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('[NEWS POST] Error:', error);
+        console.error('[NEWS POST] Stack:', error.stack);
+        res.status(500).json({ 
+            message: 'Server error', 
+            error: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 

@@ -2,6 +2,7 @@ const express = require('express');
 const sequelize = require('./config/database');
 const cors = require('cors');
 const path = require('path');
+const fs = require('fs');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
@@ -201,6 +202,24 @@ try {
 
 // Serve admin panel
 app.use('/admin', express.static('admin'));
+
+// Ensure upload directories exist
+const uploadDirs = [
+    'uploads/news',
+    'uploads/events',
+    'uploads/jobs',
+    'uploads/talents',
+    'uploads/sales-rentals',
+    'uploads/services'
+];
+
+uploadDirs.forEach(dir => {
+    const dirPath = path.join(__dirname, dir);
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true });
+        console.log(`✓ Created upload directory: ${dir}`);
+    }
+});
 
 // Test connection and sync models
 sequelize.authenticate()

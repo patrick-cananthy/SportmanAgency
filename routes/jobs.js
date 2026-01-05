@@ -105,7 +105,13 @@ router.post('/', auth, adminOnly, [
 
         res.status(201).json(job);
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
+        console.error('[JOB POST] Error:', error);
+        console.error('[JOB POST] Stack:', error.stack);
+        res.status(500).json({ 
+            message: 'Server error', 
+            error: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 
